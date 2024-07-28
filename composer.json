@@ -1,0 +1,49 @@
+{
+    "name": "jdecool/phpstan-report",
+    "description": "Enhance PHPStan analysis by providing report analysis",
+    "license": "MIT",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Jérémy DECOOL",
+            "email": "contact@jdecool.fr"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "nette/neon": "^3.4",
+        "phpstan/phpstan": "^1.0"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.43",
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "JDecool\\PhpstanEnhance\\": "src/"
+        }
+    },
+    "bin": [
+        "phpstan-report"
+    ],
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "thanks": {
+            "name": "phpstan/phpstan",
+            "url": "https://github.com/phpstan/phpstan"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@composer normalize"
+        ],
+        "post-update-cmd": [
+            "@composer normalize"
+        ]
+    }
+}

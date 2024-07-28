@@ -1,0 +1,66 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Nette\Neon\Neon;
+
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../autoload.php')) {
+    require_once __DIR__ . '/../autoload.php';
+} else {
+    require_once __DIR__ . '/../../autoload.php';
+}
+
+$binDir = $_composer_bin_dir ?? __DIR__ . '/../../vendor/bin';
+$phpstanBin = "$binDir/phpstan";
+if (!file_exists($phpstanBin)) {
+    throw new RuntimeException();
+}
+
+global $argv, $argc;
+$argv = $_SERVER['argv'] ?? [];
+$cmd = $argv;
+$exit = 0;
+
+$binDir = $_composer_bin_dir ?? __DIR__ . '/../vendor/bin';
+$cmd[0] = "$binDir/phpstan";
+$cmd = implode(' ', $cmd);
+
+$proc = proc_open($cmd, [], $pipes);
+if ($proc === false) {
+    exit(1);
+}
+
+do {
+    $procStatus = proc_get_status($proc);
+    usleep(300000);
+} while ($procStatus['running']);
+
+$statusCode = proc_close($proc);
+if ($statusCode === 0) {
+    echo "Processing results...\n\n";
+
+    $phpstanParameters = shell_exec("{$phpstanBin} dump-parameters 2> /dev/null");
+    $phpstanParameters = Neon::decode($phpstanParameters);
+    $resultCache = require $phpstanParameters['resultCachePath'];
+
+    $errorCounter = static function (array $errors): int {
+        return array_reduce(
+            $errors,
+            static fn (int $counter, array $error): int => $counter + count($error),
+            0,
+        );
+    };
+
+    $baselineIgnoredErrors = $errorCounter($resultCache['errorsCallback']());
+    $locallyIgnoredErrors = $errorCounter($resultCache['locallyIgnoredErrorsCallback']());
+    $totalIgnoredErrors = $baselineIgnoredErrors + $locallyIgnoredErrors;
+
+    echo "* Total ignored errors: $totalIgnoredErrors\n";
+    echo "  * Baselined ignored errors: $baselineIgnoredErrors\n";
+    echo "  * Locally ignored errors: $locallyIgnoredErrors\n";
+}
+
+exit($statusCode);
