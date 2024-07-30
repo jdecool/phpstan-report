@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use JDecool\PHPStanReport\Application;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../autoload.php')) {
+    require_once __DIR__ . '/../../autoload.php';
+} else {
+    require_once __DIR__ . '/../../../autoload.php';
+}
+
+$container = new ContainerBuilder();
+$container->setParameter('app.root_folder', __DIR__);
+$container->setParameter('app.debug', false);
+
+$loader = new PhpFileLoader($container, new FileLocator());
+$loader->load(__DIR__.'/../config/services.php');
+$container->compile(true);
+
+$app = $container->get(Application::class);
+
+exit($app->run(new ArgvInput(), new ConsoleOutput()));

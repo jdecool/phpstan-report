@@ -12,19 +12,28 @@
     "require": {
         "php": "^8.1",
         "nette/neon": "^3.4",
-        "phpstan/phpstan": "^1.0"
+        "phpstan/phpstan": "^1.0",
+        "symfony/config": "^5.4 || ^6.0 || ^7.1",
+        "symfony/console": "^5.4 || ^6.0 || ^7.1",
+        "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.1"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.43",
-        "phpunit/phpunit": "^10.5"
+        "phpunit/phpunit": "^10.5",
+        "symfony/var-dumper": "^5.4 || ^6.0 || ^7.1"
     },
     "autoload": {
         "psr-4": {
-            "JDecool\\PhpstanEnhance\\": "src/"
+            "JDecool\\PHPStanReport\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JDecool\\PHPStanReport\\Tests\\": "tests/"
         }
     },
     "bin": [
-        "phpstan-report"
+        "bin/phpstan-report"
     ],
     "config": {
         "allow-plugins": {
