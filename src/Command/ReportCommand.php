@@ -12,8 +12,6 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 
 final class ReportCommand extends Command
 {
-    public const NAME = 'generate';
-
     /**
      * @param ServiceLocator<ReportGenerator> $generator
      */
@@ -21,7 +19,7 @@ final class ReportCommand extends Command
         private readonly PHPStanRunner $phpstan,
         private readonly ServiceLocator $generator,
     ) {
-        parent::__construct(self::NAME);
+        parent::__construct('generate');
     }
 
     protected function configure(): void

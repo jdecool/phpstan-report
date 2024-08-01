@@ -21,7 +21,5 @@ final class Application extends BaseApplication
         foreach ($commands as $command) {
             $this->add($command);
         }
-
-        $this->setDefaultCommand(ReportCommand::NAME);
     }
 }
