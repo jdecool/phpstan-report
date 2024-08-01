@@ -2,10 +2,12 @@
 
 namespace JDecool\PHPStanReport\Runner;
 
-use Nette\Neon\Neon;
+use RuntimeException;
 
 final class PHPStanRunner
 {
+    private const DEFAULT_TIMEOUT = 60; // in seconds
+
     public function __construct(
         public readonly string $phpstanBinary,
     ) {
@@ -16,8 +18,10 @@ final class PHPStanRunner
 
     public function dumpParameters(): PHPStanParameters
     {
-        $content = shell_exec("{$this->phpstanBinary} dump-parameters 2> /dev/null");
-        $phpstanParameters = Neon::decode($content);
+        $content = shell_exec("{$this->phpstanBinary} dump-parameters --json 2> /dev/null");
+        $content = str_replace(['\\<', '\\>'], ['\\\\<', '\\\\>'], $content); // fix PHPStan JSON output escaping
+
+        $phpstanParameters = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         return new PHPStanParameters($phpstanParameters);
     }
@@ -26,19 +30,20 @@ final class PHPStanRunner
     {
         global $argv;
         $argv = $_SERVER['argv'] ?? [];
-        $cmd = $argv;
 
+        $cmd = $argv;
         $cmd[0] = $this->phpstanBinary;
         $cmd = implode(' ', $cmd);
 
         $proc = proc_open($cmd, [], $pipes);
         if ($proc === false) {
-            exit(1);
+            throw new RuntimeException("Failed to run command: {$cmd}");
         }
 
         do {
+            usleep(300_000);
+
             $procStatus = proc_get_status($proc);
-            usleep(300000);
         } while ($procStatus['running']);
 
         return proc_close($proc);
