@@ -77,6 +77,16 @@ final class PHPStanResultCache
         );
     }
 
+    public function toArray(): array
+    {
+        return [
+            'count_total_errors' => $this->countTotalErrors(),
+            'count_errors' => $this->countErrors(),
+            'count_locally_ignored_errors' => $this->countLocallyIgnoredErrors(),
+            'count_lines_to_ignores' => $this->countLinesToIgnore(),
+        ];
+    }
+
     /**
      * @param ErrorCollection $errors
      */

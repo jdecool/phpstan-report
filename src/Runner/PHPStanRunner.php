@@ -8,6 +8,10 @@ final class PHPStanRunner
 {
     private const DEFAULT_TIMEOUT = 60; // in seconds
 
+    private const OPTIONS_TO_EXCLUDE = [
+        '--format',
+    ];
+
     public function __construct(
         public readonly string $phpstanBinary,
     ) {
@@ -33,9 +37,12 @@ final class PHPStanRunner
 
         $cmd = $argv;
         $cmd[0] = $this->phpstanBinary;
-        $cmd = implode(' ', $cmd);
+        $cmd = implode(' ', array_filter(
+            $cmd,
+            fn($arg) => $this->shouldBeExcluded($arg) === false,
+        ));
 
-        $proc = proc_open($cmd, [], $pipes);
+        $proc = proc_open($cmd, [STDIN, STDERR, STDERR], $pipes);
         if ($proc === false) {
             throw new RuntimeException("Failed to run command: {$cmd}");
         }
@@ -47,5 +54,16 @@ final class PHPStanRunner
         } while ($procStatus['running']);
 
         return proc_close($proc);
+    }
+
+    private function shouldBeExcluded(string $arg): bool
+    {
+        foreach (self::OPTIONS_TO_EXCLUDE as $option) {
+            if (str_starts_with($arg, $option)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
