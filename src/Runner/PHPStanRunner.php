@@ -37,6 +37,7 @@ final class PHPStanRunner
 
         $cmd = $argv;
         $cmd[0] = $this->phpstanBinary;
+        $cmd[1] = 'analyze';
         $cmd = implode(' ', array_filter(
             $cmd,
             fn($arg) => $this->shouldBeExcluded($arg) === false,
