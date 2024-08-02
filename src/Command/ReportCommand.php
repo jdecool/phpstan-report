@@ -3,12 +3,15 @@
 namespace JDecool\PHPStanReport\Command;
 
 use JDecool\PHPStanReport\Report\ReportGenerator;
+use JDecool\PHPStanReport\Runner\PHPStanParameters;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Throwable;
 
 final class ReportCommand extends Command
 {
@@ -18,6 +21,7 @@ final class ReportCommand extends Command
     public function __construct(
         private readonly PHPStanRunner $phpstan,
         private readonly ServiceLocator $generator,
+        private readonly LoggerInterface $logger,
     ) {
         parent::__construct('generate');
     }
@@ -35,14 +39,32 @@ final class ReportCommand extends Command
 
         $statusCode = $this->phpstan->analyze();
 
-        if ($statusCode === 0) {
-            $this->generator
-                ->get($input->getOption('format'))
-                ->generate($output, $parameters->getResultCache());
-        } else {
-            $output->writeln('<error>PHPStan analysis failed, no report generated.</error>');
+        try {
+            $this->generateReport($output, $parameters, $statusCode, $input->getOption('format'));
+        } catch (Throwable $e) {
+            $this->logger->debug("PHPStan report generation failed: {$e->getMessage()}", [
+                'exception' => $e,
+                'parameters' => $parameters->toArray(),
+            ]);
+
+            throw $e;
         }
 
         return $statusCode;
+    }
+
+    private function generateReport(OutputInterface $output, PHPStanParameters $parameters, int $statusCode, string $format): void
+    {
+        if ($statusCode === 0) {
+            $this->generator
+                ->get($format)
+                ->generate($output, $parameters->getResultCache());
+        } else {
+            $this->logger->debug("PHPStan analysis failed", [
+                'parameters' => $parameters->toArray(),
+            ]);
+
+            $output->writeln('<error>PHPStan analysis failed, no report generated.</error>');
+        }
     }
 }

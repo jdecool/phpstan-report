@@ -2,6 +2,8 @@
 
 namespace JDecool\PHPStanReport\Runner;
 
+use RuntimeException;
+
 final class PHPStanParameters
 {
     public function __construct(
@@ -12,11 +14,16 @@ final class PHPStanParameters
     public function getResultCache(): PHPStanResultCache
     {
         if (!file_exists($this->data['resultCachePath'])) {
-            throw new \RuntimeException('PHPStan result cache file not found.');
+            throw new RuntimeException('PHPStan result cache file not found.');
         }
 
         $cache = require $this->data['resultCachePath'];
 
         return new PHPStanResultCache($cache);
+    }
+
+    public function toArray(): array
+    {
+        return $this->data;
     }
 }

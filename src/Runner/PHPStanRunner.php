@@ -2,6 +2,7 @@
 
 namespace JDecool\PHPStanReport\Runner;
 
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 final class PHPStanRunner
@@ -14,6 +15,7 @@ final class PHPStanRunner
 
     public function __construct(
         public readonly string $phpstanBinary,
+        public readonly LoggerInterface $logger,
     ) {
         if (!is_executable($this->phpstanBinary)) {
             throw new \LogicException("File {$this->phpstanBinary} should be executable.");
@@ -22,7 +24,10 @@ final class PHPStanRunner
 
     public function dumpParameters(): PHPStanParameters
     {
-        $content = shell_exec("{$this->phpstanBinary} dump-parameters --json 2> /dev/null");
+        $command = "{$this->phpstanBinary} dump-parameters --json 2> /dev/null";
+        $this->logger->debug("Execute command: {$command}");
+
+        $content = shell_exec($command);
         $content = str_replace(['\\<', '\\>'], ['\\\\<', '\\\\>'], $content); // fix PHPStan JSON output escaping
 
         $phpstanParameters = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
@@ -42,6 +47,8 @@ final class PHPStanRunner
             $cmd,
             fn($arg) => $this->shouldBeExcluded($arg) === false,
         ));
+
+        $this->logger->debug("Execute command: {$cmd}");
 
         $proc = proc_open($cmd, [STDIN, STDERR, STDERR], $pipes);
         if ($proc === false) {

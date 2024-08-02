@@ -2,8 +2,15 @@
 
 namespace JDecool\PHPStanReport\Runner;
 
+use Psr\Log\LoggerInterface;
+
 final class PHPStanRunnerFactory
 {
+    public function __construct(
+        private readonly LoggerInterface $logger,
+    ) {
+    }
+
     public function create(): PHPStanRunner
     {
         global $_composer_bin_dir;
@@ -14,6 +21,6 @@ final class PHPStanRunnerFactory
             throw new \RuntimeException();
         }
 
-        return new PHPStanRunner($phpstanBin);
+        return new PHPStanRunner($phpstanBin, $this->logger);
     }
 }
