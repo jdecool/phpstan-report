@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-final class ExportCommand extends Command
+final class GenerateCommand extends Command
 {
     /**
      * @param ServiceLocator<ReportExporter> $exporter
@@ -19,7 +19,7 @@ final class ExportCommand extends Command
         private readonly PHPStanRunner $phpstan,
         private readonly ServiceLocator $exporter,
     ) {
-        parent::__construct('export');
+        parent::__construct('generate');
     }
 
     protected function configure(): void
@@ -27,6 +27,7 @@ final class ExportCommand extends Command
         $this->ignoreValidationErrors();
 
         $this->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'gitlab');
+        $this->setDescription('Generate a report from the PHPStan cache analysis');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

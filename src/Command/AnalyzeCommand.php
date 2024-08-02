@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Throwable;
 
-final class ReportCommand extends Command
+final class AnalyzeCommand extends Command
 {
     /**
      * @param ServiceLocator<ReportGenerator> $generator
@@ -23,7 +23,7 @@ final class ReportCommand extends Command
         private readonly ServiceLocator $generator,
         private readonly LoggerInterface $logger,
     ) {
-        parent::__construct('generate');
+        parent::__construct('analyze');
     }
 
     protected function configure(): void
@@ -31,6 +31,7 @@ final class ReportCommand extends Command
         $this->ignoreValidationErrors();
 
         $this->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'text');
+        $this->setDescription('Start the PHPStan analysis and generate a report');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

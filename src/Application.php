@@ -2,7 +2,7 @@
 
 namespace JDecool\PHPStanReport;
 
-use JDecool\PHPStanReport\Command\ReportCommand;
+use JDecool\PHPStanReport\Command\AnalyzeCommand;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Command\Command;
 
