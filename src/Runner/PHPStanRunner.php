@@ -4,14 +4,15 @@ namespace JDecool\PHPStanReport\Runner;
 
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Symfony\Component\Console\Input\ArgvInput;
 
 final class PHPStanRunner
 {
-    private const DEFAULT_TIMEOUT = 60; // in seconds
-
     private const OPTIONS_TO_EXCLUDE = [
         '--format',
     ];
+
+    private readonly ArgvInput $argv;
 
     public function __construct(
         public readonly string $phpstanBinary,
@@ -20,11 +21,27 @@ final class PHPStanRunner
         if (!is_executable($this->phpstanBinary)) {
             throw new \LogicException("File {$this->phpstanBinary} should be executable.");
         }
+
+        $this->argv = new ArgvInput();
     }
 
     public function dumpParameters(): PHPStanParameters
     {
-        $command = "{$this->phpstanBinary} dump-parameters --json 2> /dev/null";
+        $args = '';
+        if ($this->argv->hasParameterOption(['-c', '--configuration'])) {
+            $args .= " --configuration={$this->argv->getParameterOption(['-c', '--configuration'])}";
+        }
+        if ($this->argv->hasParameterOption(['--memory-limit'])) {
+            $memoryLimit = $this->argv->getParameterOption(['--memory-limit']);
+            ini_set('memory_limit', $memoryLimit);
+
+            $args .= " --memory-limit={$memoryLimit}";
+        }
+        if (!$this->argv->hasParameterOption(['--json'])) {
+            $args .= ' --json';
+        }
+
+        $command = "{$this->phpstanBinary} dump-parameters $args 2> /dev/null";
         $this->logger->debug("Execute command: {$command}");
 
         $content = shell_exec($command);
@@ -37,7 +54,6 @@ final class PHPStanRunner
 
     public function analyze(): int
     {
-        global $argv;
         $argv = $_SERVER['argv'] ?? [];
 
         $cmd = $argv;
