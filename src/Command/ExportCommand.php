@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-final class GenerateCommand extends Command
+final class ExportCommand extends Command
 {
     /**
      * @param ServiceLocator<ReportExporter> $exporter
@@ -19,7 +19,7 @@ final class GenerateCommand extends Command
         private readonly PHPStanRunner $phpstan,
         private readonly ServiceLocator $exporter,
     ) {
-        parent::__construct('generate');
+        parent::__construct('export');
     }
 
     protected function configure(): void
