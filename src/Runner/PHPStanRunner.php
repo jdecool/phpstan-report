@@ -77,7 +77,9 @@ final class PHPStanRunner
             $procStatus = proc_get_status($proc);
         } while ($procStatus['running']);
 
-        return proc_close($proc);
+        $exitCode = proc_close($proc);
+
+        return $procStatus['exitcode'] ?? $exitCode;
     }
 
     private function shouldBeExcluded(string $arg): bool
