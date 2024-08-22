@@ -49,8 +49,11 @@
         }
     },
     "scripts": {
+        "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
+        "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
         "post-install-cmd": [
-            "@composer normalize"
+            "@composer normalize",
+            "@composer install -d tools/php-cs-fixer"
         ],
         "post-update-cmd": [
             "@composer normalize"
