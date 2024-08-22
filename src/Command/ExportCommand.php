@@ -27,6 +27,7 @@ final class ExportCommand extends Command
         $this->ignoreValidationErrors();
 
         $this->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'gitlab');
+        $this->addOption('without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->setDescription('Generate a report from the PHPStan cache analysis');
     }
 
@@ -34,7 +35,10 @@ final class ExportCommand extends Command
     {
         $parameters = $this->phpstan->dumpParameters();
 
-        $statusCode = $this->phpstan->analyze();
+        $statusCode = Command::SUCCESS;
+        if (!$input->getOption('without-analyze')) {
+            $statusCode = $this->phpstan->analyze();
+        }
 
         $this->exporter
             ->get($input->getOption('format'))

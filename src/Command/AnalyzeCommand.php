@@ -31,6 +31,7 @@ final class AnalyzeCommand extends Command
         $this->ignoreValidationErrors();
 
         $this->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'text');
+        $this->addOption('without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->setDescription('Start the PHPStan analysis and generate a report');
     }
 
@@ -38,7 +39,10 @@ final class AnalyzeCommand extends Command
     {
         $parameters = $this->phpstan->dumpParameters();
 
-        $statusCode = $this->phpstan->analyze();
+        $statusCode = Command::SUCCESS;
+        if (!$input->getOption('without-analyze')) {
+            $statusCode = $this->phpstan->analyze();
+        }
 
         try {
             $this->generateReport($output, $parameters, $statusCode, $input->getOption('format'));
