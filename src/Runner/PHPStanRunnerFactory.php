@@ -8,8 +8,7 @@ final class PHPStanRunnerFactory
 {
     public function __construct(
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function create(): PHPStanRunner
     {

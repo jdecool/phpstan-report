@@ -20,7 +20,7 @@ final class GitlabReportExporter implements ReportExporter
             $errors[] = $this->transform($error);
         }
 
-        $output->writeln(json_encode($errors, flags: JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        $output->writeln(json_encode($errors, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     public static function format(): string

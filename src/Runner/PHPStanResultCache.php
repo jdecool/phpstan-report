@@ -27,8 +27,7 @@ final class PHPStanResultCache
 
     public function __construct(
         private readonly array $data,
-    ) {
-    }
+    ) {}
 
     public function countTotalErrors(): int
     {
@@ -71,7 +70,7 @@ final class PHPStanResultCache
         return $this->countLinesToIgnore ??= array_reduce(
             $this->getLinesToIgnore(),
             static function (int $counter, array $lines): int {
-                return $counter + array_reduce($lines, static fn (int $c, $l): int => $c + count($l), 0);
+                return $counter + array_reduce($lines, static fn(int $c, $l): int => $c + count($l), 0);
             },
             0,
         );
@@ -94,7 +93,7 @@ final class PHPStanResultCache
     {
         return array_reduce(
             $errors,
-            static fn (int $counter, array $error): int => $counter + count($error),
+            static fn(int $counter, array $error): int => $counter + count($error),
             0,
         );
     }

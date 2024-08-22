@@ -8,8 +8,7 @@ final class PHPStanParameters
 {
     public function __construct(
         private readonly array $data,
-    ) {
-    }
+    ) {}
 
     public function getResultCache(): PHPStanResultCache
     {

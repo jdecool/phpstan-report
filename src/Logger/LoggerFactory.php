@@ -12,8 +12,7 @@ class LoggerFactory
 {
     public function __construct(
         private readonly DebugResolver $debugResolver,
-    ) {
-    }
+    ) {}
 
     public function create(): LoggerInterface
     {

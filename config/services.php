@@ -16,6 +16,7 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_locator;
@@ -25,7 +26,7 @@ return static function (ContainerConfigurator $configurator): void {
     $services->defaults()->autowire()->autoconfigure();
 
     $services->instanceof(Command::class)->tag('app.command');
-    $services->load('JDecool\\PHPStanReport\\', __DIR__.'/../src/*');
+    $services->load('JDecool\\PHPStanReport\\', __DIR__ . '/../src/*');
 
     $services->set(DebugResolver::class)->arg('$debug', '%app.debug%');
 
