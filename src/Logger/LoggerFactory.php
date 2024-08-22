@@ -10,9 +10,14 @@ use Psr\Log\NullLogger;
 
 class LoggerFactory
 {
-    public function create(bool $debug = false): LoggerInterface
+    public function __construct(
+        private readonly DebugResolver $debugResolver,
+    ) {
+    }
+
+    public function create(): LoggerInterface
     {
-        if ($debug === false) {
+        if ($this->debugResolver->value === false) {
             return new NullLogger();
         }
 

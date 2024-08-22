@@ -8,6 +8,7 @@ use JDecool\PHPStanReport\Command\ExportCommand;
 use JDecool\PHPStanReport\Exporter\GitlabReportExporter;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
 use JDecool\PHPStanReport\Generator\TextReportGenerator;
+use JDecool\PHPStanReport\Logger\DebugResolver;
 use JDecool\PHPStanReport\Logger\LoggerFactory;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
 use JDecool\PHPStanReport\Runner\PHPStanRunnerFactory;
@@ -26,7 +27,9 @@ return static function (ContainerConfigurator $configurator): void {
     $services->instanceof(Command::class)->tag('app.command');
     $services->load('JDecool\\PHPStanReport\\', __DIR__.'/../src/*');
 
-    $services->set(Logger::class)->factory([service(LoggerFactory::class), 'create'])->arg('$debug', '%app.debug%');
+    $services->set(DebugResolver::class)->arg('$debug', '%app.debug%');
+
+    $services->set(Logger::class)->factory([service(LoggerFactory::class), 'create']);
     $services->alias(LoggerInterface::class, Logger::class);
 
     $services->set(GitlabReportExporter::class)->tag('app.report_exporter');
