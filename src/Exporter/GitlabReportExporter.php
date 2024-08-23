@@ -28,6 +28,10 @@ final class GitlabReportExporter implements ReportExporter
         return 'gitlab';
     }
 
+    /**
+     * @param array<Error[]> $errors
+     * @return \Generator<Error>
+     */
     private function errorIterator(array $errors): \Generator
     {
         foreach ($errors as $phpstanErrors) {
@@ -37,6 +41,10 @@ final class GitlabReportExporter implements ReportExporter
         }
     }
 
+    /**
+     * @param Error $error
+     * @return array{description: string, fingerprint: string, severity: string, location: array{path: string, lines: array{begin: int}}}
+     */
     private function transform(Error $error): array
     {
         return [

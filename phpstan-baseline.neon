@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Offset 'exitcode' on array\\{command\\: string, pid\\: int, running\\: false, signaled\\: bool, stopped\\: bool, exitcode\\: int, termsig\\: int, stopsig\\: int\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Runner/PHPStanRunner.php

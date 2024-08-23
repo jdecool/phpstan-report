@@ -49,14 +49,16 @@
         }
     },
     "scripts": {
-        "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
-        "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
         "post-install-cmd": [
             "@composer normalize",
-            "@composer install -d tools/php-cs-fixer"
+            "@composer install -d tools/php-cs-fixer",
+            "@composer install -d tools/phpstan"
         ],
         "post-update-cmd": [
             "@composer normalize"
-        ]
+        ],
+        "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
+        "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
+        "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon"
     }
 }

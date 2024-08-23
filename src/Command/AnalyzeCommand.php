@@ -2,7 +2,7 @@
 
 namespace JDecool\PHPStanReport\Command;
 
-use JDecool\PHPStanReport\Report\ReportGenerator;
+use JDecool\PHPStanReport\Generator\ReportGenerator;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
 use Psr\Log\LoggerInterface;
