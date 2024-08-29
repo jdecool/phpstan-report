@@ -2,6 +2,7 @@
 
 namespace JDecool\PHPStanReport\Runner;
 
+use JDecool\PHPStanReport\Application\Context;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -12,17 +13,14 @@ final class PHPStanRunner
         '--format',
     ];
 
-    private readonly ArgvInput $argv;
-
     public function __construct(
-        public readonly string $phpstanBinary,
-        public readonly LoggerInterface $logger,
+        private readonly Context $context,
+        private readonly LoggerInterface $logger,
+        private readonly ArgvInput $argv,
     ) {
-        if (!is_executable($this->phpstanBinary)) {
-            throw new \LogicException("File {$this->phpstanBinary} should be executable.");
+        if (!is_executable($this->context->getPhpstanBinary())) {
+            throw new \LogicException("File {$this->context->getPhpstanBinary()} should be executable.");
         }
-
-        $this->argv = new ArgvInput();
     }
 
     public function dumpParameters(): PHPStanParameters
@@ -41,7 +39,7 @@ final class PHPStanRunner
             $args .= ' --json';
         }
 
-        $command = "{$this->phpstanBinary} dump-parameters $args 2> /dev/null";
+        $command = "{$this->context->getPhpstanBinary()} dump-parameters $args 2> /dev/null";
         $this->logger->debug("Execute command: {$command}");
 
         $content = shell_exec($command);
@@ -57,7 +55,7 @@ final class PHPStanRunner
         $argv = $_SERVER['argv'] ?? [];
 
         $cmd = $argv;
-        $cmd[0] = $this->phpstanBinary;
+        $cmd[0] = $this->context->getPhpstanBinary();
         $cmd[1] = 'analyze';
         $cmd = implode(' ', array_filter(
             $cmd,

@@ -2,6 +2,7 @@
 
 namespace JDecool\PHPStanReport\Logger;
 
+use JDecool\PHPStanReport\Application;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
@@ -11,12 +12,12 @@ use Psr\Log\NullLogger;
 class LoggerFactory
 {
     public function __construct(
-        private readonly DebugResolver $debugResolver,
+        private readonly Application\Context $context,
     ) {}
 
     public function create(): LoggerInterface
     {
-        if ($this->debugResolver->value === false) {
+        if ($this->context->isDebug() === false) {
             return new NullLogger();
         }
 

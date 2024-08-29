@@ -8,13 +8,13 @@ use JDecool\PHPStanReport\Command\ExportCommand;
 use JDecool\PHPStanReport\Exporter\GitlabReportExporter;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
 use JDecool\PHPStanReport\Generator\TextReportGenerator;
-use JDecool\PHPStanReport\Logger\DebugResolver;
 use JDecool\PHPStanReport\Logger\LoggerFactory;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
 use JDecool\PHPStanReport\Runner\PHPStanRunnerFactory;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -28,8 +28,6 @@ return static function (ContainerConfigurator $configurator): void {
     $services->instanceof(Command::class)->tag('app.command');
     $services->load('JDecool\\PHPStanReport\\', __DIR__ . '/../src/*');
 
-    $services->set(DebugResolver::class)->arg('$debug', '%app.debug%');
-
     $services->set(Logger::class)->factory([service(LoggerFactory::class), 'create']);
     $services->alias(LoggerInterface::class, Logger::class);
 
@@ -40,8 +38,8 @@ return static function (ContainerConfigurator $configurator): void {
     $services->set(TextReportGenerator::class)->tag('app.report_generator');
     $services->set(AnalyzeCommand::class)->arg('$generator', tagged_locator('app.report_generator', defaultIndexMethod: 'format'));
 
-    $services->set(PHPStanRunnerFactory::class);
-    $services->set(PHPStanRunner::class)->factory([service(PHPStanRunnerFactory::class), 'create']);
-
     $services->set(Application::class)->public()->args(['$commands' => tagged_iterator('app.command')]);
+    $services->set(Application\Context::class)->arg('$debug', '%app.debug%');
+
+    $services->set(ArgvInput::class);
 };
