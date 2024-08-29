@@ -11,6 +11,7 @@ final class PHPStanRunner
 {
     private const OPTIONS_TO_EXCLUDE = [
         '--format',
+        '--phpstan-bin',
     ];
 
     public function __construct(
