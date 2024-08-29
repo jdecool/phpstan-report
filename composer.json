@@ -16,7 +16,8 @@
         "psr/log": "^2.0 || ^3.0",
         "symfony/config": "^5.4 || ^6.0 || ^7.1",
         "symfony/console": "^5.4 || ^6.0 || ^7.1",
-        "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.1"
+        "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.1",
+        "symfony/finder": "^5.4 || ^6.0 || ^7.1"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.43",
@@ -51,12 +52,14 @@
     "scripts": {
         "post-install-cmd": [
             "@composer normalize",
+            "@composer install -d tools/phar",
             "@composer install -d tools/php-cs-fixer",
             "@composer install -d tools/phpstan"
         ],
         "post-update-cmd": [
             "@composer normalize"
         ],
+        "build": "cd tools/phar && php vendor/bin/box compile -c box.json",
         "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
         "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
         "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon"

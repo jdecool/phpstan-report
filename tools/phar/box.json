@@ -1,0 +1,22 @@
+{
+  "base-path": "../../",
+  "directories": [
+    "bin",
+    "config",
+    "src",
+    "vendor"
+  ],
+  "files": [
+    "LICENSE",
+    "vendor/autoload.php"
+  ],
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Php"
+  ],
+  "annotations": false,
+  "compression": "GZ",
+  "check-requirements": false,
+  "git-version": "package_version",
+  "main": "bin/phpstan-report",
+  "output": "tools/phar/build/phpstan-report.phar"
+}
