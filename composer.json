@@ -65,6 +65,10 @@
         "build": "cd tools/phar && php vendor/bin/box compile -c box.json",
         "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
         "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
+        "lint": [
+            "@cs",
+            "@phpstan"
+        ],
         "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon"
     }
 }
