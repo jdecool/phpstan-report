@@ -26,7 +26,7 @@ return static function (ContainerConfigurator $configurator): void {
     $services->defaults()->autowire()->autoconfigure();
 
     $services->instanceof(Command::class)->tag('app.command');
-    $services->load('JDecool\\PHPStanReport\\', __DIR__ . '/../src/*');
+    $services->load('JDecool\\PHPStanReport\\', __DIR__ . '/../src/*')->exclude(__DIR__ . '/../src/bootstrap.php');
 
     $services->set(Logger::class)->factory([service(LoggerFactory::class), 'create']);
     $services->alias(LoggerInterface::class, Logger::class);
