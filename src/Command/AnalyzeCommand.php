@@ -30,6 +30,7 @@ final class AnalyzeCommand extends Command
     {
         $this->ignoreValidationErrors();
 
+        $this->addOption('continue-on-error', 'c', InputOption::VALUE_NONE, 'Continue the analysis if error occured');
         $this->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'text');
         $this->addOption('without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->setDescription('Start the PHPStan analysis and generate a report');
@@ -45,7 +46,7 @@ final class AnalyzeCommand extends Command
         }
 
         try {
-            $this->generateReport($output, $parameters, $statusCode, $input->getOption('format'));
+            $this->generateReport($output, $parameters, $statusCode, $input->getOption('format'), $input->getOption('continue-on-error'));
         } catch (Throwable $e) {
             $this->logger->debug("PHPStan report generation failed: {$e->getMessage()}", [
                 'exception' => $e,
@@ -58,9 +59,9 @@ final class AnalyzeCommand extends Command
         return $statusCode;
     }
 
-    private function generateReport(OutputInterface $output, PHPStanParameters $parameters, int $statusCode, string $format): void
+    private function generateReport(OutputInterface $output, PHPStanParameters $parameters, int $statusCode, string $format, bool $continueOnError): void
     {
-        if ($statusCode === 0) {
+        if ($continueOnError || $statusCode === 0) {
             $this->generator
                 ->get($format)
                 ->generate($output, $parameters->getResultCache());

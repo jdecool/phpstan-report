@@ -10,7 +10,8 @@ use Symfony\Component\Console\Input\ArgvInput;
 final class PHPStanRunner
 {
     private const OPTIONS_TO_EXCLUDE = [
-        '--format',
+        '-c', '--continue-on-error',
+        '-f', '--format',
         '--phpstan-bin',
     ];
 
