@@ -33,12 +33,12 @@ final class ExportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $parameters = $this->phpstan->dumpParameters();
-
         $statusCode = Command::SUCCESS;
         if (!$input->getOption('without-analyze')) {
             $statusCode = $this->phpstan->analyze();
         }
+
+        $parameters = $this->phpstan->dumpParameters();
 
         $this->exporter
             ->get($input->getOption('format'))

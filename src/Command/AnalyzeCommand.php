@@ -38,12 +38,12 @@ final class AnalyzeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $parameters = $this->phpstan->dumpParameters();
-
         $statusCode = Command::SUCCESS;
         if (!$input->getOption('without-analyze')) {
             $statusCode = $this->phpstan->analyze();
         }
+
+        $parameters = $this->phpstan->dumpParameters();
 
         try {
             $this->generateReport($output, $parameters, $statusCode, $input->getOption('format'), $input->getOption('continue-on-error'));
