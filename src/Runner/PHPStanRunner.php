@@ -41,7 +41,7 @@ final class PHPStanRunner
             $args .= ' --json';
         }
 
-        $command = "{$this->context->getPhpstanBinary()} dump-parameters $args 2> /dev/null";
+        $command = PHP_BINARY . " {$this->context->getPhpstanBinary()} dump-parameters $args 2> /dev/null";
         $this->logger->debug("Execute command: {$command}");
 
         $content = shell_exec($command);
@@ -59,6 +59,8 @@ final class PHPStanRunner
         $cmd = $argv;
         $cmd[0] = $this->context->getPhpstanBinary();
         $cmd[1] = 'analyze';
+        array_unshift($cmd, PHP_BINARY);
+
         $cmd = implode(' ', array_filter(
             $cmd,
             fn($arg) => $this->shouldBeExcluded($arg) === false,
