@@ -12,6 +12,7 @@ final class PHPStanRunner
     private const OPTIONS_TO_EXCLUDE = [
         '-c', '--continue-on-error',
         '-f', '--format',
+        '-m', '--maximum-allowed-errors',
         '--phpstan-bin',
     ];
 

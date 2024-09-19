@@ -33,6 +33,7 @@ final class AnalyzeCommand extends Command
         $this->addOption('continue-on-error', 'c', InputOption::VALUE_NONE, 'Continue the analysis if error occured');
         $this->addOption('format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'text');
         $this->addOption('without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
+        $this->addOption('maximum-allowed-errors', 'm', InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
         $this->setDescription('Start the PHPStan analysis and generate a report');
     }
 
@@ -54,6 +55,14 @@ final class AnalyzeCommand extends Command
             ]);
 
             throw $e;
+        }
+
+        if ($input->hasOption('maximum-allowed-errors')) {
+            $maximumAllowedErrors = (int) $input->getOption('maximum-allowed-errors');
+            if ($maximumAllowedErrors <= $parameters->getResultCache()->countTotalErrors()) {
+                $output->writeln("<error>Maximum allowed errors exceeded ($maximumAllowedErrors allowed).</error>");
+                $statusCode = $statusCode !== Command::SUCCESS ? $statusCode : 255;
+            }
         }
 
         return $statusCode;
