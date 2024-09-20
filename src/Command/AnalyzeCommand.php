@@ -57,8 +57,9 @@ final class AnalyzeCommand extends Command
             throw $e;
         }
 
-        if ($input->hasOption('maximum-allowed-errors')) {
-            $maximumAllowedErrors = (int) $input->getOption('maximum-allowed-errors');
+        $maximumAllowedErrors = $input->getOption('maximum-allowed-errors');
+        if (is_numeric($maximumAllowedErrors)) {
+            $maximumAllowedErrors = (int) $maximumAllowedErrors;
             if ($maximumAllowedErrors <= $parameters->getResultCache()->countTotalErrors()) {
                 $output->writeln("<error>Maximum allowed errors exceeded ($maximumAllowedErrors allowed).</error>");
                 $statusCode = $statusCode !== Command::SUCCESS ? $statusCode : 255;
