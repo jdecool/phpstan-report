@@ -25,9 +25,44 @@ final class PHPStanResultCache
 
     private int $countLinesToIgnore;
 
+    /**
+     * @var array<string, int>
+     */
+    private array $errorMap = [];
+
     public function __construct(
         private readonly array $data,
     ) {}
+
+    /**
+     * @return array<string, int>
+     */
+    public function getErrorsMap(): array
+    {
+        if (!empty($this->errorMap)) {
+            return $this->errorMap;
+        }
+
+        $map = [];
+
+        foreach ($this->getErrors() as $errors) {
+            foreach ($errors as $error) {
+                $map[$error->getIdentifier()] ??= 0;
+                $map[$error->getIdentifier()]++;
+            }
+        }
+
+        foreach ($this->getLocallyIgnoredErrors() as $errors) {
+            foreach ($errors as $error) {
+                $map[$error->getIdentifier()] ??= 0;
+                $map[$error->getIdentifier()]++;
+            }
+        }
+
+        ksort($map);
+
+        return $this->errorMap = $map;
+    }
 
     public function countTotalErrors(): int
     {
@@ -83,6 +118,7 @@ final class PHPStanResultCache
             'count_errors' => $this->countErrors(),
             'count_locally_ignored_errors' => $this->countLocallyIgnoredErrors(),
             'count_lines_to_ignores' => $this->countLinesToIgnore(),
+            'errors_map' => $this->getErrorsMap(),
         ];
     }
 
