@@ -6,6 +6,7 @@ use JDecool\PHPStanReport\Application;
 use JDecool\PHPStanReport\Command\AnalyzeCommand;
 use JDecool\PHPStanReport\Command\ExportCommand;
 use JDecool\PHPStanReport\Exporter\GitlabReportExporter;
+use JDecool\PHPStanReport\Generator\HtmlReportGenerator;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
 use JDecool\PHPStanReport\Generator\TextReportGenerator;
 use JDecool\PHPStanReport\Logger\LoggerFactory;
@@ -34,6 +35,7 @@ return static function (ContainerConfigurator $configurator): void {
     $services->set(GitlabReportExporter::class)->tag('app.report_exporter');
     $services->set(ExportCommand::class)->arg('$exporter', tagged_locator('app.report_exporter', defaultIndexMethod: 'format'));
 
+    $services->set(HtmlReportGenerator::class)->tag('app.report_generator');
     $services->set(JsonReportGenerator::class)->tag('app.report_generator');
     $services->set(TextReportGenerator::class)->tag('app.report_generator');
     $services->set(AnalyzeCommand::class)->arg('$generator', tagged_locator('app.report_generator', defaultIndexMethod: 'format'));
