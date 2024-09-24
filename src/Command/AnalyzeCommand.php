@@ -2,6 +2,7 @@
 
 namespace JDecool\PHPStanReport\Command;
 
+use JDecool\PHPStanReport\Bridge\PHPStan\Command as Bridge;
 use JDecool\PHPStanReport\Generator\ReportGenerator;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
@@ -22,6 +23,7 @@ final class AnalyzeCommand extends Command
         private readonly PHPStanRunner $phpstan,
         private readonly ServiceLocator $generator,
         private readonly LoggerInterface $logger,
+        private readonly Bridge\AnalyseCommandDefinition $analyseCommandDefinition,
     ) {
         parent::__construct('analyze');
     }
@@ -30,24 +32,27 @@ final class AnalyzeCommand extends Command
     {
         $this->ignoreValidationErrors();
 
-        $this->addOption('continue-on-error', 'c', InputOption::VALUE_NONE, 'Continue the analysis if error occured');
-        $this->addOption('output-format', 'f', InputOption::VALUE_OPTIONAL, 'Output format', 'text');
-        $this->addOption('without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
-        $this->addOption('maximum-allowed-errors', 'm', InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
+        // setup PHPStan analyze command definition
+        $this->setDefinition($this->analyseCommandDefinition->getInputDefinition());
+
+        $this->addOption('report-continue-on-error', null, InputOption::VALUE_NONE, 'Continue the analysis if error occured');
+        $this->addOption('report-output-format', null, InputOption::VALUE_OPTIONAL, 'Output format', 'text');
+        $this->addOption('report-without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
+        $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
         $this->setDescription('Start the PHPStan analysis and generate a report');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $statusCode = Command::SUCCESS;
-        if (!$input->getOption('without-analyze')) {
+        if (!$input->getOption('report-without-analyze')) {
             $statusCode = $this->phpstan->analyze();
         }
 
         $parameters = $this->phpstan->dumpParameters();
 
         try {
-            $this->generateReport($output, $parameters, $statusCode, $input->getOption('output-format'), $input->getOption('continue-on-error'));
+            $this->generateReport($output, $parameters, $statusCode, $input->getOption('report-output-format'), $input->getOption('report-continue-on-error'));
         } catch (Throwable $e) {
             $this->logger->debug("PHPStan report generation failed: {$e->getMessage()}", [
                 'exception' => $e,
@@ -57,7 +62,7 @@ final class AnalyzeCommand extends Command
             throw $e;
         }
 
-        $maximumAllowedErrors = $input->getOption('maximum-allowed-errors');
+        $maximumAllowedErrors = $input->getOption('report-maximum-allowed-errors');
         if (is_numeric($maximumAllowedErrors)) {
             $maximumAllowedErrors = (int) $maximumAllowedErrors;
             if ($maximumAllowedErrors <= $parameters->getResultCache()->countTotalErrors()) {
