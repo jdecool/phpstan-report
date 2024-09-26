@@ -3,10 +3,16 @@
 namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
+use NumberFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class HtmlReportGenerator implements ReportGenerator
 {
+    public function __construct(
+        private readonly NumberFormatter $formatter,
+    ) {}
+
     public function generate(OutputInterface $output, PHPStanResultCache $result): void
     {
         $html = <<<HTML
@@ -45,7 +51,7 @@ final class HtmlReportGenerator implements ReportGenerator
 HTML;
 
         foreach ($result->getErrorsMap() as $identifier => $count) {
-            $html .= "<tr><td>$identifier</td><td>$count</td></tr>";
+            $html .= "<tr><td>$identifier</td><td>{$this->formatter->format($count, NumberFormatter::DECIMAL)}</td></tr>";
         }
 
         $html .= <<<HTML

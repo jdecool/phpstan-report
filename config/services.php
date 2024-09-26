@@ -8,10 +8,9 @@ use JDecool\PHPStanReport\Command\ExportCommand;
 use JDecool\PHPStanReport\Exporter\GitlabReportExporter;
 use JDecool\PHPStanReport\Generator\HtmlReportGenerator;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
+use JDecool\PHPStanReport\Generator\NumberFormatterFactory;
 use JDecool\PHPStanReport\Generator\TextReportGenerator;
 use JDecool\PHPStanReport\Logger\LoggerFactory;
-use JDecool\PHPStanReport\Runner\PHPStanRunner;
-use JDecool\PHPStanReport\Runner\PHPStanRunnerFactory;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -34,6 +33,8 @@ return static function (ContainerConfigurator $configurator): void {
 
     $services->set(GitlabReportExporter::class)->tag('app.report_exporter');
     $services->set(ExportCommand::class)->arg('$exporter', tagged_locator('app.report_exporter', defaultIndexMethod: 'format'));
+
+    $services->set(NumberFormatter::class, NumberFormatter::class)->factory([service(NumberFormatterFactory::class), 'create']);
 
     $services->set(HtmlReportGenerator::class)->tag('app.report_generator');
     $services->set(JsonReportGenerator::class)->tag('app.report_generator');
