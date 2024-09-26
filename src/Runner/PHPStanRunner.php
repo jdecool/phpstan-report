@@ -14,6 +14,7 @@ final class PHPStanRunner
         '--report-format',
         '--report-maximum-allowed-errors',
         '--report-output-format',
+        '--report-sort-by',
         '--report-without-analyze',
         '--phpstan-bin',
     ];

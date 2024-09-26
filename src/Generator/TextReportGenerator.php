@@ -15,7 +15,7 @@ final class TextReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
-    public function generate(OutputInterface $output, PHPStanResultCache $result): void
+    public function generate(OutputInterface $output, PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): void
     {
         $output->write("Processing results...\n\n");
 
@@ -27,7 +27,7 @@ final class TextReportGenerator implements ReportGenerator
         $output->write("Summary\n");
         $output->write("-------\n\n");
 
-        $rows = $this->createSummaryTableRows($result);
+        $rows = $this->createSummaryTableRows($result, $sortBy);
         (new Table($output))
             ->setHeaders(['Identifier', 'Count'])
             ->setRows($rows)
@@ -40,10 +40,16 @@ final class TextReportGenerator implements ReportGenerator
         return 'text';
     }
 
-    private function createSummaryTableRows(PHPStanResultCache $result): array
+    private function createSummaryTableRows(PHPStanResultCache $result, SortField $sortBy): array
     {
+        $errorsMap = $result->getErrorsMap();
+        match ($sortBy) {
+            SortField::Identifier => ksort($errorsMap),
+            SortField::Counter => arsort($errorsMap),
+        };
+
         $rows = [];
-        foreach ($result->getErrorsMap() as $identifier => $count) {
+        foreach ($errorsMap as $identifier => $count) {
             $rows[] = [$identifier, $this->formatter->format($count, NumberFormatter::DECIMAL)];
         }
 

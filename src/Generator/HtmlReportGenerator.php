@@ -13,7 +13,7 @@ final class HtmlReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
-    public function generate(OutputInterface $output, PHPStanResultCache $result): void
+    public function generate(OutputInterface $output, PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): void
     {
         $html = <<<HTML
 <html>
@@ -50,7 +50,13 @@ final class HtmlReportGenerator implements ReportGenerator
       <tbody>
 HTML;
 
-        foreach ($result->getErrorsMap() as $identifier => $count) {
+        $errorsMap = $result->getErrorsMap();
+        match ($sortBy) {
+            SortField::Identifier => ksort($errorsMap),
+            SortField::Counter => arsort($errorsMap),
+        };
+
+        foreach ($errorsMap as $identifier => $count) {
             $html .= "<tr><td>$identifier</td><td>{$this->formatter->format($count, NumberFormatter::DECIMAL)}</td></tr>";
         }
 
