@@ -37,7 +37,7 @@ final class AnalyzeCommand extends Command
         $this->setDefinition($this->analyseCommandDefinition->getInputDefinition());
 
         $this->addOption('report-continue-on-error', null, InputOption::VALUE_NONE, 'Continue the analysis if error occured');
-        $this->addOption('report-output-format', null, InputOption::VALUE_OPTIONAL, 'Output format', 'text');
+        $this->addOption('report-output-format', null, InputOption::VALUE_OPTIONAL, 'Output format (allowed: ' . implode(', ', $this->getAllowedOutputFormats()) . ')', 'text');
         $this->addOption('report-without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
         $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::Identifier->value);
@@ -46,9 +46,16 @@ final class AnalyzeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $outputFormat = $input->getOption('report-output-format');
+        if (!$this->generator->has($outputFormat)) {
+            $output->writeln('<error>Invalid --report-output-format value option (allowed: ' . implode(', ', $this->getAllowedOutputFormats()) . ').</error>');
+
+            return Command::INVALID;
+        }
+
         $reportSortBy = SortField::tryFrom($input->getOption('report-sort-by'));
         if ($reportSortBy === null) {
-            $output->writeln('<error>Invalid value for option "report-sort-by" (allowed: ' . implode(', ', SortField::allowedValues()) . ').</error>');
+            $output->writeln('<error>Invalid --report-sort-by value option (allowed: ' . implode(', ', SortField::allowedValues()) . ').</error>');
 
             return Command::INVALID;
         }
@@ -61,7 +68,7 @@ final class AnalyzeCommand extends Command
         $parameters = $this->phpstan->dumpParameters();
 
         try {
-            $this->generateReport($output, $parameters, $statusCode, $input->getOption('report-output-format'), $input->getOption('report-continue-on-error'), $reportSortBy);
+            $this->generateReport($output, $parameters, $statusCode, $outputFormat, $input->getOption('report-continue-on-error'), $reportSortBy);
         } catch (Throwable $e) {
             $this->logger->debug("PHPStan report generation failed: {$e->getMessage()}", [
                 'exception' => $e,
@@ -96,5 +103,17 @@ final class AnalyzeCommand extends Command
 
             $output->writeln('<error>PHPStan analysis failed, no report generated.</error>');
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getAllowedOutputFormats(): array
+    {
+        $allowedFormats = array_keys($this->generator->getProvidedServices());
+
+        sort($allowedFormats);
+
+        return $allowedFormats;
     }
 }
