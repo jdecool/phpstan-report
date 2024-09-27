@@ -6,6 +6,7 @@ use JDecool\PHPStanReport\Runner\PHPStanResultCache;
 use NumberFormatter;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -15,8 +16,10 @@ final class TextReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
-    public function generate(OutputInterface $output, PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): void
+    public function generate(PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
+        $output = new BufferedOutput();
+
         $output->write("Processing results...\n\n");
 
         $output->write("* Total error(s): {$result->countTotalErrors()}\n");
@@ -33,6 +36,8 @@ final class TextReportGenerator implements ReportGenerator
             ->setRows($rows)
             ->render()
         ;
+
+        return $output->fetch();
     }
 
     public static function format(): string

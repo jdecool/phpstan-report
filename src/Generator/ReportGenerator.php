@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 interface ReportGenerator
 {
-    public function generate(OutputInterface $output, PHPStanResultCache $result, SortField $sortBy): void;
+    public function generate(PHPStanResultCache $result, SortField $sortBy): string;
 
     public static function format(): string;
 }

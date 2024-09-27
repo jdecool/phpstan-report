@@ -93,9 +93,11 @@ final class AnalyzeCommand extends Command
     private function generateReport(OutputInterface $output, PHPStanParameters $parameters, int $statusCode, string $format, bool $continueOnError, SortField $sortedBy): void
     {
         if ($continueOnError || $statusCode === 0) {
-            $this->generator
+            $result = $this->generator
                 ->get($format)
-                ->generate($output, $parameters->getResultCache(), $sortedBy);
+                ->generate($parameters->getResultCache(), $sortedBy);
+
+            $output->writeln($result);
         } else {
             $this->logger->debug("PHPStan analysis failed", [
                 'parameters' => $parameters->toArray(),

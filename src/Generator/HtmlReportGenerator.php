@@ -13,7 +13,7 @@ final class HtmlReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
-    public function generate(OutputInterface $output, PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): void
+    public function generate(PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $html = <<<HTML
 <html>
@@ -73,7 +73,7 @@ HTML;
 </html>
 HTML;
 
-        $output->writeln($html);
+        return $html;
     }
 
     public static function format(): string

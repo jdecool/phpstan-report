@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class JsonReportGenerator implements ReportGenerator
 {
-    public function generate(OutputInterface $output, PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): void
+    public function generate(PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $data = $result->toArray();
 
@@ -16,7 +16,7 @@ final class JsonReportGenerator implements ReportGenerator
             SortField::Counter => arsort($data['errors_map']),
         };
 
-        $output->writeln(json_encode($data, flags: JSON_PRETTY_PRINT));
+        return json_encode($data, flags: JSON_PRETTY_PRINT);
     }
 
     public static function format(): string
