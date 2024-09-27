@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 interface ReportExporter
 {
-    public function export(OutputInterface $output, PHPStanResultCache $result): void;
+    public function export(PHPStanResultCache $result): string;
 
     public static function format(): string;
 }

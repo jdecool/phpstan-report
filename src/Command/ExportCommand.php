@@ -52,9 +52,11 @@ final class ExportCommand extends Command
 
         $parameters = $this->phpstan->dumpParameters();
 
-        $this->exporter
+        $result = $this->exporter
             ->get($outputFormat)
-            ->export($output, $parameters->getResultCache());
+            ->export($parameters->getResultCache());
+
+        $output->writeln($result);
 
         return $statusCode;
     }

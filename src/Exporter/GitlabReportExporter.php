@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class GitlabReportExporter implements ReportExporter
 {
-    public function export(OutputInterface $output, PHPStanResultCache $result): void
+    public function export(PHPStanResultCache $result): string
     {
         $errors = [];
 
@@ -20,7 +20,7 @@ final class GitlabReportExporter implements ReportExporter
             $errors[] = $this->transform($error);
         }
 
-        $output->writeln(json_encode($errors, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        return json_encode($errors, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     public static function format(): string
