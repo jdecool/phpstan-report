@@ -13,10 +13,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 
 final class AnalyzeCommand extends Command
 {
+    /**
+     * @var string[]
+     */
+    private static array $allowedOutputFormats = [];
+
     /**
      * @param ServiceLocator<ReportGenerator> $generator
      */
@@ -25,6 +31,7 @@ final class AnalyzeCommand extends Command
         private readonly ServiceLocator $generator,
         private readonly LoggerInterface $logger,
         private readonly Bridge\AnalyseCommandDefinition $analyseCommandDefinition,
+        private readonly Filesystem $fs,
     ) {
         parent::__construct('analyze');
     }
@@ -41,6 +48,11 @@ final class AnalyzeCommand extends Command
         $this->addOption('report-without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
         $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::Identifier->value);
+
+        foreach ($this->getAllowedOutputFormats() as $outputFormat) {
+            $this->addOption("report-file-{$outputFormat}", null, InputOption::VALUE_OPTIONAL, "Output file for {$outputFormat} report");
+        }
+
         $this->setDescription('Start the PHPStan analysis and generate a report');
     }
 
@@ -78,6 +90,17 @@ final class AnalyzeCommand extends Command
             throw $e;
         }
 
+        foreach ($this->getAllowedOutputFormats() as $format) {
+            $outputFile = $input->getOption("report-file-{$format}");
+            if ($outputFile !== null) {
+                $output = $this->generator
+                    ->get($format)
+                    ->generate($parameters->getResultCache(), $reportSortBy);
+
+                $this->fs->dumpFile($outputFile, $output);
+            }
+        }
+
         $maximumAllowedErrors = $input->getOption('report-maximum-allowed-errors');
         if (is_numeric($maximumAllowedErrors)) {
             $maximumAllowedErrors = (int) $maximumAllowedErrors;
@@ -112,10 +135,15 @@ final class AnalyzeCommand extends Command
      */
     private function getAllowedOutputFormats(): array
     {
+        if (!empty(self::$allowedOutputFormats)) {
+            return self::$allowedOutputFormats;
+        }
+
+
         $allowedFormats = array_keys($this->generator->getProvidedServices());
 
         sort($allowedFormats);
 
-        return $allowedFormats;
+        return self::$allowedOutputFormats = $allowedFormats;
     }
 }

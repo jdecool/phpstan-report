@@ -16,6 +16,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_locator;
@@ -26,6 +28,8 @@ return static function (ContainerConfigurator $configurator): void {
 
     $services->instanceof(Command::class)->tag('app.command');
     $services->load('JDecool\\PHPStanReport\\', __DIR__ . '/../src/*')->exclude(__DIR__ . '/../src/bootstrap.php');
+
+    $services->set(Filesystem::class);
 
     $services->set(Logger::class)->factory([service(LoggerFactory::class), 'create']);
     $services->alias(LoggerInterface::class, Logger::class);

@@ -11,7 +11,10 @@ final class PHPStanRunner
 {
     private const OPTIONS_TO_EXCLUDE = [
         '--report-continue-on-error',
-        '--report-format',
+        '--report-file-gitlab',
+        '--report-file-html',
+        '--report-file-json',
+        '--report-file-text',
         '--report-maximum-allowed-errors',
         '--report-output-format',
         '--report-sort-by',
