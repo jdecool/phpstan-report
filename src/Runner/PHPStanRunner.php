@@ -9,16 +9,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 final class PHPStanRunner
 {
-    private const OPTIONS_TO_EXCLUDE = [
-        '--report-continue-on-error',
-        '--report-file-gitlab',
-        '--report-file-html',
-        '--report-file-json',
-        '--report-file-text',
-        '--report-maximum-allowed-errors',
-        '--report-output-format',
-        '--report-sort-by',
-        '--report-without-analyze',
+    public array $optionsToIgnore = [
         '--phpstan-bin',
     ];
 
@@ -29,6 +20,17 @@ final class PHPStanRunner
     ) {
         if (!is_executable($this->context->getPhpstanBinary())) {
             throw new \LogicException("File {$this->context->getPhpstanBinary()} should be executable.");
+        }
+    }
+
+    public function registerOptionToIgnore(string $option): void
+    {
+        if (!str_starts_with($option, '--')) {
+            $option = "--{$option}";
+        }
+
+        if (!in_array($option, $this->optionsToIgnore)) {
+            $this->optionsToIgnore[] = $option;
         }
     }
 
@@ -93,7 +95,7 @@ final class PHPStanRunner
 
     private function shouldBeExcluded(string $arg): bool
     {
-        foreach (self::OPTIONS_TO_EXCLUDE as $option) {
+        foreach ($this->optionsToIgnore as $option) {
             if (str_starts_with($arg, $option)) {
                 return true;
             }

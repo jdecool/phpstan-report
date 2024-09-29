@@ -34,6 +34,14 @@ final class AnalyzeCommand extends Command
         private readonly Filesystem $fs,
     ) {
         parent::__construct('analyze');
+
+        foreach ($this->getDefinition()->getOptions() as $option) {
+            if (!str_starts_with($option->getName(), 'report-')) {
+                continue;
+            }
+
+            $this->phpstan->registerOptionToIgnore($option->getName());
+        }
     }
 
     protected function configure(): void
