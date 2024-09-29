@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use JDecool\PHPStanReport\Application;
 use JDecool\PHPStanReport\Command\AnalyzeCommand;
-use JDecool\PHPStanReport\Command\ExportCommand;
-use JDecool\PHPStanReport\Exporter\GitlabReportExporter;
 use JDecool\PHPStanReport\Generator\GitlabReportGenerator;
 use JDecool\PHPStanReport\Generator\HtmlReportGenerator;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
@@ -31,9 +29,6 @@ return static function (ContainerConfigurator $configurator): void {
 
     $services->set(Logger::class)->factory([service(LoggerFactory::class), 'create']);
     $services->alias(LoggerInterface::class, Logger::class);
-
-    $services->set(GitlabReportExporter::class)->tag('app.report_exporter');
-    $services->set(ExportCommand::class)->arg('$exporter', tagged_locator('app.report_exporter', defaultIndexMethod: 'format'));
 
     $services->set(NumberFormatter::class, NumberFormatter::class)->factory([service(NumberFormatterFactory::class), 'create']);
 
