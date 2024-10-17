@@ -4,8 +4,6 @@ namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
 use NumberFormatter;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class HtmlReportGenerator implements ReportGenerator
 {

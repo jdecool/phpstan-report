@@ -3,7 +3,6 @@
 namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
-use Symfony\Component\Console\Output\OutputInterface;
 
 interface ReportGenerator
 {
