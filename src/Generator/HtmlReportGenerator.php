@@ -67,6 +67,27 @@ HTML;
         </tr>
       </tfoot>
     </table>
+HTML;
+
+        foreach ($errorsMap as $identifier => $_) {
+            $html .= "<h2>$identifier</h2>";
+
+            $errors = $result->filterByIdentifier($identifier);
+
+            if (!empty($errors)) {
+                $html .= '<ul>';
+            }
+
+            foreach ($errors as $error) {
+                $html .= "<li>{$error->getFile()}:{$error->getLine()} - {$error->getMessage()}</li>";
+            }
+
+            if (!empty($errors)) {
+                $html .= '</ul>';
+            }
+        }
+
+        $html .= <<<HTML
   </body>
 </html>
 HTML;

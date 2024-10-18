@@ -111,6 +111,36 @@ final class PHPStanResultCache
         );
     }
 
+    /**
+     * @return Error[]
+     */
+    public function filterByIdentifier(string $identifier): array
+    {
+        $map = [];
+
+        foreach ($this->getErrors() as $errors) {
+            foreach ($errors as $error) {
+                if ($error->getIdentifier() !== $identifier) {
+                    continue;
+                }
+
+                $map[] = $error;
+            }
+        }
+
+        foreach ($this->getLocallyIgnoredErrors() as $errors) {
+            foreach ($errors as $error) {
+                if ($error->getIdentifier() !== $identifier) {
+                    continue;
+                }
+
+                $map[] = $error;
+            }
+        }
+
+        return $map;
+    }
+
     public function toArray(): array
     {
         return [
