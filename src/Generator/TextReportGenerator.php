@@ -20,10 +20,10 @@ final class TextReportGenerator implements ReportGenerator
 
         $output->write("Processing results...\n\n");
 
-        $output->write("* Total error(s): {$result->countTotalErrors()}\n");
-        $output->write("  * Error(s): {$result->countErrors()}\n");
-        $output->write("  * Locally ignored error(s): {$result->countLocallyIgnoredErrors()}\n");
-        $output->write("  * Line(s) to ignore: {$result->countLinesToIgnore()}\n\n");
+        $output->write("* Total error(s): {$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}\n");
+        $output->write("  * Error(s): {$this->formatter->format($result->countErrors(), NumberFormatter::DECIMAL)}\n");
+        $output->write("  * Locally ignored error(s): {$this->formatter->format($result->countLocallyIgnoredErrors(), NumberFormatter::DECIMAL)}\n");
+        $output->write("  * Line(s) to ignore: {$this->formatter->format($result->countLinesToIgnore(), NumberFormatter::DECIMAL)}\n\n");
 
         $output->write("Summary\n");
         $output->write("-------\n\n");
@@ -57,7 +57,7 @@ final class TextReportGenerator implements ReportGenerator
         }
 
         $rows[] = new TableSeparator();
-        $rows[] = ['Total', $result->countTotalErrors()];
+        $rows[] = ['Total', $this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)];
 
         return $rows;
     }
