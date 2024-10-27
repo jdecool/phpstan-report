@@ -24,15 +24,15 @@ final class HtmlReportGenerator implements ReportGenerator
     <table>
       <tr>
         <td><b>Total error(s)</b></td>
-        <td>{$result->countTotalErrors()}</td>
+        <td>{$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}</td>
       </tr>
       <tr>
         <td><b>Error(s)</b></td>
-        <td>{$result->countErrors()}</td>
+        <td>{$this->formatter->format($result->countErrors(), NumberFormatter::DECIMAL)}</td>
       </tr>
       <tr>
         <td><b>Locally ignored error(s)</b></td>
-        <td>{$result->countLocallyIgnoredErrors()}</td>
+        <td>{$this->formatter->format($result->countLocallyIgnoredErrors(), NumberFormatter::DECIMAL)}</td>
       </tr>
     </table>
 
@@ -63,7 +63,7 @@ HTML;
       <tfoot>
         <tr>
           <th><b>Total</b></th>
-          <td>{$result->countTotalErrors()}</td>
+          <td>{$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}</td>
         </tr>
       </tfoot>
     </table>
