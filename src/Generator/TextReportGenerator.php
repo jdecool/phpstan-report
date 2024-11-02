@@ -24,17 +24,19 @@ final class TextReportGenerator implements ReportGenerator
         $output->write("* Total error(s): {$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}\n");
         $output->write("  * Error(s): {$this->formatter->format($result->countErrors(), NumberFormatter::DECIMAL)}\n");
         $output->write("  * Locally ignored error(s): {$this->formatter->format($result->countLocallyIgnoredErrors(), NumberFormatter::DECIMAL)}\n");
-        $output->write("  * Line(s) to ignore: {$this->formatter->format($result->countLinesToIgnore(), NumberFormatter::DECIMAL)}\n\n");
+        $output->write("  * Line(s) to ignore: {$this->formatter->format($result->countLinesToIgnore(), NumberFormatter::DECIMAL)}\n");
 
-        $output->write("Summary\n");
-        $output->write("-------\n\n");
+        if ($result->countTotalErrors() > 0) {
+            $output->write("\nSummary\n");
+            $output->write("-------\n\n");
 
-        $rows = $this->createSummaryTableRows($result, $sortBy);
-        (new Table($output))
-            ->setHeaders(['Identifier', 'Count'])
-            ->setRows($rows)
-            ->render()
-        ;
+            $rows = $this->createSummaryTableRows($result, $sortBy);
+            (new Table($output))
+                ->setHeaders(['Identifier', 'Count'])
+                ->setRows($rows)
+                ->render()
+            ;
+        }
 
         return $output->fetch();
     }
