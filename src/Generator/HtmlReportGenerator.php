@@ -3,6 +3,7 @@
 namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
+use JDecool\PHPStanReport\Runner\ResultCache;
 use NumberFormatter;
 
 final class HtmlReportGenerator implements ReportGenerator
@@ -11,7 +12,7 @@ final class HtmlReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
-    public function generate(PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $html = <<<HTML
 <html>

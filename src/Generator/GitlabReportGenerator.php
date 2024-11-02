@@ -3,11 +3,12 @@
 namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
+use JDecool\PHPStanReport\Runner\ResultCache;
 use PHPStan\Analyser\Error;
 
 final class GitlabReportGenerator implements ReportGenerator
 {
-    public function generate(PHPStanResultCache $result, SortField $sortBy): string
+    public function generate(ResultCache $result, SortField $sortBy): string
     {
         $errors = [];
 

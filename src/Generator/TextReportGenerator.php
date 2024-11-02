@@ -3,6 +3,7 @@
 namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
+use JDecool\PHPStanReport\Runner\ResultCache;
 use NumberFormatter;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -14,7 +15,7 @@ final class TextReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
-    public function generate(PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $output = new BufferedOutput();
 
@@ -43,7 +44,7 @@ final class TextReportGenerator implements ReportGenerator
         return 'text';
     }
 
-    private function createSummaryTableRows(PHPStanResultCache $result, SortField $sortBy): array
+    private function createSummaryTableRows(ResultCache $result, SortField $sortBy): array
     {
         $errorsMap = $result->getErrorsMap();
         match ($sortBy) {

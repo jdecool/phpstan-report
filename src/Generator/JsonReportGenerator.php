@@ -3,10 +3,11 @@
 namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
+use JDecool\PHPStanReport\Runner\ResultCache;
 
 final class JsonReportGenerator implements ReportGenerator
 {
-    public function generate(PHPStanResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $data = $result->toArray();
 

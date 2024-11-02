@@ -5,6 +5,7 @@ namespace JDecool\PHPStanReport\Command;
 use JDecool\PHPStanReport\Bridge\PHPStan\Command as Bridge;
 use JDecool\PHPStanReport\Generator\ReportGenerator;
 use JDecool\PHPStanReport\Generator\SortField;
+use JDecool\PHPStanReport\Runner\FilteredResultCache;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
 use Psr\Log\LoggerInterface;
@@ -56,6 +57,7 @@ final class AnalyzeCommand extends Command
         $this->addOption('report-without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
         $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::Identifier->value);
+        $this->addOption('report-exclude-identifier', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Identifier to exclude from the report');
 
         foreach ($this->getAllowedOutputFormats() as $outputFormat) {
             $this->addOption("report-file-{$outputFormat}", null, InputOption::VALUE_OPTIONAL, "Output file for {$outputFormat} report");
@@ -88,7 +90,15 @@ final class AnalyzeCommand extends Command
         $parameters = $this->phpstan->dumpParameters();
 
         try {
-            $this->generateReport($output, $parameters, $statusCode, $outputFormat, $input->getOption('report-continue-on-error'), $reportSortBy);
+            $this->generateReport(
+                $output,
+                $parameters,
+                $statusCode,
+                $outputFormat,
+                $input->getOption('report-continue-on-error'),
+                $input->getOption('report-exclude-identifier'),
+                $reportSortBy,
+            );
         } catch (Throwable $e) {
             $this->logger->debug("PHPStan report generation failed: {$e->getMessage()}", [
                 'exception' => $e,
@@ -121,21 +131,38 @@ final class AnalyzeCommand extends Command
         return $statusCode;
     }
 
-    private function generateReport(OutputInterface $output, PHPStanParameters $parameters, int $statusCode, string $format, bool $continueOnError, SortField $sortedBy): void
-    {
-        if ($continueOnError || $statusCode === 0) {
-            $result = $this->generator
-                ->get($format)
-                ->generate($parameters->getResultCache(), $sortedBy);
-
-            $output->writeln($result);
-        } else {
+    /**
+     * @param string[] $excludedErrorIdentifiers
+     */
+    private function generateReport(
+        OutputInterface $output,
+        PHPStanParameters $parameters,
+        int $statusCode,
+        string $format,
+        bool $continueOnError,
+        array $excludedErrorIdentifiers,
+        SortField $sortedBy,
+    ): void {
+        if (!$continueOnError && $statusCode !== 0) {
             $this->logger->debug("PHPStan analysis failed", [
                 'parameters' => $parameters->toArray(),
             ]);
 
             $output->writeln('<error>PHPStan analysis failed, no report generated.</error>');
+
+            return;
         }
+
+        $resultCache = $parameters->getResultCache();
+        if (!empty($excludedErrorIdentifiers)) {
+            $resultCache = FilteredResultCache::fromResultatCache($resultCache, $excludedErrorIdentifiers);
+        }
+
+        $result = $this->generator
+            ->get($format)
+            ->generate($resultCache, $sortedBy);
+
+        $output->writeln($result);
     }
 
     /**
@@ -146,7 +173,6 @@ final class AnalyzeCommand extends Command
         if (!empty(self::$allowedOutputFormats)) {
             return self::$allowedOutputFormats;
         }
-
 
         $allowedFormats = array_keys($this->generator->getProvidedServices());
 
