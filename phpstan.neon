@@ -5,6 +5,8 @@ parameters:
     level: 6
     paths:
         - src
+    excludePaths:
+        - src/bootstrap.php
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
