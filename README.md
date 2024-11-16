@@ -32,6 +32,7 @@ $ php vendor/bin/phpstan-report analyze
 * `--report-continue-on-error`: Continue report generation even if the analysis fails
 * `--report-maximum-allowed-errors`: Set the maximum number of allowed errors
 * `--report-sort-by`: Sort the report results (options: identifier, counter)
+* `--report-exclude-identifier`: Identifier to exclude from the report (accepts multiple values)
 * `--report-file-<format>`: Export report in an output file for a particular format
 
 Available formats are: `text`, `html`, `json` and `gitlab`.
