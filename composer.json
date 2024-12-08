@@ -12,7 +12,7 @@
     "require": {
         "php": "^8.1",
         "monolog/monolog": "^2.0 || ^3.0",
-        "phpstan/phpstan": "^1.11",
+        "phpstan/phpstan": "^1.11 || ^2.0",
         "psr/log": "^2.0 || ^3.0",
         "symfony/config": "^5.4 || ^6.0 || ^7.1",
         "symfony/console": "^5.4 || ^6.0 || ^7.1",
@@ -65,8 +65,8 @@
             "@composer normalize"
         ],
         "build": "cd tools/phar && php vendor/bin/box compile -c box.json",
-        "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
-        "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
+        "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
+        "cs.fix": "PHP_CS_FIXER_IGNORE_ENV=1 php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
         "lint": [
             "@cs",
             "@phpstan"
