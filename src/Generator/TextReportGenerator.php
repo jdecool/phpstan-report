@@ -21,6 +21,7 @@ final class TextReportGenerator implements ReportGenerator
 
         $output->write("Processing results...\n\n");
 
+        $output->write("* Level: {$result->getLevel()}\n");
         $output->write("* Total error(s): {$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}\n");
         $output->write("  * Error(s): {$this->formatter->format($result->countErrors(), NumberFormatter::DECIMAL)}\n");
         $output->write("  * Locally ignored error(s): {$this->formatter->format($result->countLocallyIgnoredErrors(), NumberFormatter::DECIMAL)}\n");
