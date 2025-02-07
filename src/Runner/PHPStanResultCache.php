@@ -17,6 +17,17 @@ final class PHPStanResultCache extends ResultCache
 
     protected array $linesToIgnore;
 
+    public static function fromFile(string $file): self
+    {
+        if (!file_exists($file)) {
+            throw new \RuntimeException("File {$file} does not exist.");
+        }
+
+        $data = require $file;
+
+        return new static($data);
+    }
+
     /**
      * @return ErrorCollection
      */

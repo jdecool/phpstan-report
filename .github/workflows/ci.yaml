@@ -29,3 +29,18 @@ jobs:
         uses: docker://oskarstark/phpstan-ga
         env:
           REQUIRE_DEV: true
+
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.1', '8.2', '8.3', '8.4' ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: xdebug
+      - uses: ramsey/composer-install@v2
+      - run: vendor/bin/phpunit --testdox --coverage-text --coverage-clover coverage.xml

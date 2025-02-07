@@ -26,6 +26,11 @@ abstract class ResultCache
         protected readonly array $data,
     ) {}
 
+    public function getLevel(): string
+    {
+        return $this->data['meta']['level'];
+    }
+
     /**
      * @return array<string, int>
      */
@@ -115,6 +120,7 @@ abstract class ResultCache
     public function toArray(): array
     {
         return [
+            'level' => $this->getLevel(),
             'count_total_errors' => $this->countTotalErrors(),
             'count_errors' => $this->countErrors(),
             'count_locally_ignored_errors' => $this->countLocallyIgnoredErrors(),

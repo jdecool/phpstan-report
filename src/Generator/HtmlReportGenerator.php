@@ -24,6 +24,10 @@ final class HtmlReportGenerator implements ReportGenerator
 
     <table>
       <tr>
+        <td><b>Level</b></td>
+        <td>{$result->getLevel()}</td>
+      </tr>
+      <tr>
         <td><b>Total error(s)</b></td>
         <td>{$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}</td>
       </tr>

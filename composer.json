@@ -23,6 +23,7 @@
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.43",
+        "fakerphp/faker": "^1.24",
         "phpunit/phpunit": "^10.5",
         "symfony/var-dumper": "^5.4 || ^6.0 || ^7.1"
     },
@@ -71,6 +72,7 @@
             "@cs",
             "@phpstan"
         ],
-        "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon"
+        "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon",
+        "test": "php vendor/bin/phpunit"
     }
 }
