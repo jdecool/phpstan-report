@@ -5,6 +5,7 @@ namespace JDecool\PHPStanReport\Command;
 use JDecool\PHPStanReport\Bridge\PHPStan\Command as Bridge;
 use JDecool\PHPStanReport\Generator\ReportGenerator;
 use JDecool\PHPStanReport\Generator\SortField;
+use JDecool\PHPStanReport\Runner\ExecutionResult;
 use JDecool\PHPStanReport\Runner\FilteredResultCache;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
@@ -12,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -82,18 +84,22 @@ final class AnalyzeCommand extends Command
             return Command::INVALID;
         }
 
-        $statusCode = Command::SUCCESS;
+        $executionResult = new ExecutionResult(Command::SUCCESS);
         if (!$input->getOption('report-without-analyze')) {
-            $statusCode = $this->phpstan->analyze();
+            $executionResult = $this->phpstan->analyze();
         }
 
         $parameters = $this->phpstan->dumpParameters();
 
         try {
+            ($output instanceof ConsoleOutputInterface)
+                ? $output->getErrorOutput()->write("{$executionResult->output}")
+                : $output->write($executionResult->output);
+
             $this->generateReport(
                 $output,
                 $parameters,
-                $statusCode,
+                $executionResult,
                 $outputFormat,
                 $input->getOption('report-continue-on-error'),
                 $input->getOption('report-exclude-identifier'),
@@ -124,11 +130,11 @@ final class AnalyzeCommand extends Command
             $maximumAllowedErrors = (int) $maximumAllowedErrors;
             if ($maximumAllowedErrors <= $parameters->getResultCache()->countTotalErrors()) {
                 $output->writeln("<error>Maximum allowed errors exceeded ($maximumAllowedErrors allowed).</error>");
-                $statusCode = $statusCode !== Command::SUCCESS ? $statusCode : 255;
+                $executionResult = $executionResult->hasFailed() ? $executionResult : new ExecutionResult(255, $executionResult->output);
             }
         }
 
-        return $statusCode;
+        return $executionResult->exitCode;
     }
 
     /**
@@ -137,13 +143,13 @@ final class AnalyzeCommand extends Command
     private function generateReport(
         OutputInterface $output,
         PHPStanParameters $parameters,
-        int $statusCode,
+        ExecutionResult $executionResult,
         string $format,
         bool $continueOnError,
         array $excludedErrorIdentifiers,
         SortField $sortedBy,
     ): void {
-        if (!$continueOnError && $statusCode !== 0) {
+        if (!$continueOnError && $executionResult->hasFailed()) {
             $this->logger->debug("PHPStan analysis failed", [
                 'parameters' => $parameters->toArray(),
             ]);

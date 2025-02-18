@@ -61,7 +61,7 @@ final class PHPStanRunner
         return new PHPStanParameters($phpstanParameters);
     }
 
-    public function analyze(): int
+    public function analyze(): ExecutionResult
     {
         $argv = $_SERVER['argv'] ?? [];
 
@@ -77,20 +77,32 @@ final class PHPStanRunner
 
         $this->logger->debug("Execute command: {$cmd}");
 
-        $proc = proc_open($cmd, [STDIN, STDERR, STDERR], $pipes);
+        $descriptorspec = [
+            STDIN,
+            ['pipe', 'w'],
+            STDERR,
+        ];
+
+        $proc = proc_open($cmd, $descriptorspec, $pipes);
         if ($proc === false) {
             throw new RuntimeException("Failed to run command: {$cmd}");
         }
 
+        $output = '';
+
         do {
             usleep(300_000);
 
+            $output .= stream_get_contents($pipes[1]);
             $procStatus = proc_get_status($proc);
         } while ($procStatus['running']);
 
         $exitCode = proc_close($proc);
 
-        return $procStatus['exitcode'] ?? $exitCode;
+        $processExitCode = (int) ($procStatus['exitcode'] ?? $exitCode);
+        $this->logger->debug("--> Exit code: {$processExitCode}");
+
+        return new ExecutionResult($processExitCode, $output);
     }
 
     private function shouldBeExcluded(string $arg): bool
