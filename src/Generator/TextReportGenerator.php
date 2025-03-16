@@ -2,7 +2,6 @@
 
 namespace JDecool\PHPStanReport\Generator;
 
-use JDecool\PHPStanReport\Runner\PHPStanResultCache;
 use JDecool\PHPStanReport\Runner\ResultCache;
 use NumberFormatter;
 use Symfony\Component\Console\Helper\Table;
