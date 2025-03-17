@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JDecool\PHPStanReport\Application;
 
 use Symfony\Component\Console\Input\ArgvInput;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JDecool\PHPStanReport\Bridge\PHPStan\Command;
 
 use Symfony\Component\Console\Input\InputArgument;

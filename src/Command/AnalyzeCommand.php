@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JDecool\PHPStanReport\Command;
 
 use JDecool\PHPStanReport\Bridge\PHPStan\Command as Bridge;
