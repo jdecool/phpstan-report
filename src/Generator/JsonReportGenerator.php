@@ -8,6 +8,11 @@ use JDecool\PHPStanReport\Runner\ResultCache;
 
 final class JsonReportGenerator implements ReportGenerator
 {
+    public function canBeDumpedInFile(): bool
+    {
+        return true;
+    }
+
     public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $data = $result->toArray();

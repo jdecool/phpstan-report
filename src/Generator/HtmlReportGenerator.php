@@ -9,6 +9,11 @@ use NumberFormatter;
 
 final class HtmlReportGenerator implements ReportGenerator
 {
+    public function canBeDumpedInFile(): bool
+    {
+        return true;
+    }
+
     public function __construct(
         private readonly NumberFormatter $formatter,
     ) {}

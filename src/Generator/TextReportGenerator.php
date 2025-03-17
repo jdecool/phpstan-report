@@ -16,6 +16,11 @@ final class TextReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
+    public function canBeDumpedInFile(): bool
+    {
+        return true;
+    }
+
     public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $output = new BufferedOutput();

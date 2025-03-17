@@ -63,8 +63,13 @@ final class AnalyzeCommand extends Command
         $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::Identifier->value);
         $this->addOption('report-exclude-identifier', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Identifier to exclude from the report');
 
-        foreach ($this->getAllowedOutputFormats() as $outputFormat) {
-            $this->addOption("report-file-{$outputFormat}", null, InputOption::VALUE_OPTIONAL, "Output file for {$outputFormat} report");
+        /**
+         * @var ReportGenerator $generator
+         */
+        foreach ($this->generator->getProvidedServices() as $outputFormat => $generator) {
+            if ($this->generator->get($outputFormat)->canBeDumpedInFile()) {
+                $this->addOption("report-file-{$outputFormat}", null, InputOption::VALUE_OPTIONAL, "Output file for {$outputFormat} report");
+            }
         }
 
         $this->setDescription('Start the PHPStan analysis and generate a report');
@@ -117,7 +122,7 @@ final class AnalyzeCommand extends Command
         }
 
         foreach ($this->getAllowedOutputFormats() as $format) {
-            $outputFile = $input->getOption("report-file-{$format}");
+            $outputFile = $input->hasOption("report-file-{$format}") ? $input->getOption("report-file-{$format}") : null;
             if ($outputFile !== null) {
                 $output = $this->generator
                     ->get($format)

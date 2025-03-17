@@ -9,6 +9,11 @@ use PHPStan\Analyser\Error;
 
 final class GitlabReportGenerator implements ReportGenerator
 {
+    public function canBeDumpedInFile(): bool
+    {
+        return true;
+    }
+
     public function generate(ResultCache $result, SortField $sortBy): string
     {
         $errors = [];
