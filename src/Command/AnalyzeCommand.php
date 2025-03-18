@@ -179,7 +179,7 @@ final class AnalyzeCommand extends Command
 
         $result = $this->generator
             ->get($format)
-            ->generate($resultCache, $sortedBy);
+            ->generate($input, $resultCache, $sortedBy);
 
         $output->writeln($result);
     }
