@@ -6,19 +6,23 @@ namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\ResultCache;
 use NumberFormatter;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 
 final class HtmlReportGenerator implements ReportGenerator
 {
+    public function __construct(
+        private readonly NumberFormatter $formatter,
+    ) {}
+
+    public function addCommandOptions(Command $command): void {}
+
     public function canBeDumpedInFile(): bool
     {
         return true;
     }
 
-    public function __construct(
-        private readonly NumberFormatter $formatter,
-    ) {}
-
-    public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $html = <<<HTML
 <html>
