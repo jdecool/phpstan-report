@@ -6,8 +6,10 @@ namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\ResultCache;
 use NumberFormatter;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TextReportGenerator implements ReportGenerator
@@ -16,12 +18,14 @@ final class TextReportGenerator implements ReportGenerator
         private readonly NumberFormatter $formatter,
     ) {}
 
+    public function addCommandOptions(Command $command): void {}
+
     public function canBeDumpedInFile(): bool
     {
         return true;
     }
 
-    public function generate(ResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::Identifier): string
     {
         $output = new BufferedOutput();
 

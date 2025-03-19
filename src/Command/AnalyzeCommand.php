@@ -67,7 +67,11 @@ final class AnalyzeCommand extends Command
          * @var ReportGenerator $generator
          */
         foreach ($this->generator->getProvidedServices() as $outputFormat => $generator) {
-            if ($this->generator->get($outputFormat)->canBeDumpedInFile()) {
+            $reportGenerator = $this->generator->get($outputFormat);
+
+            $reportGenerator->addCommandOptions($this);
+
+            if ($reportGenerator->canBeDumpedInFile()) {
                 $this->addOption("report-file-{$outputFormat}", null, InputOption::VALUE_OPTIONAL, "Output file for {$outputFormat} report");
             }
         }
@@ -104,6 +108,7 @@ final class AnalyzeCommand extends Command
                 : $output->write($executionResult->output);
 
             $this->generateReport(
+                $input,
                 $output,
                 $parameters,
                 $executionResult,
@@ -126,7 +131,7 @@ final class AnalyzeCommand extends Command
             if ($outputFile !== null) {
                 $output = $this->generator
                     ->get($format)
-                    ->generate($parameters->getResultCache(), $reportSortBy);
+                    ->generate($input, $parameters->getResultCache(), $reportSortBy);
 
                 $this->fs->dumpFile($outputFile, $output);
             }
@@ -148,6 +153,7 @@ final class AnalyzeCommand extends Command
      * @param string[] $excludedErrorIdentifiers
      */
     private function generateReport(
+        InputInterface $input,
         OutputInterface $output,
         PHPStanParameters $parameters,
         ExecutionResult $executionResult,
@@ -173,7 +179,7 @@ final class AnalyzeCommand extends Command
 
         $result = $this->generator
             ->get($format)
-            ->generate($resultCache, $sortedBy);
+            ->generate($input, $resultCache, $sortedBy);
 
         $output->writeln($result);
     }

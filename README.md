@@ -34,8 +34,10 @@ $ php vendor/bin/phpstan-report analyze
 * `--report-sort-by`: Sort the report results (options: identifier, counter)
 * `--report-exclude-identifier`: Identifier to exclude from the report (accepts multiple values)
 * `--report-file-<format>`: Export report in an output file for a particular format
+* `--report-http-target-url`: The target URL to send the report to (available only if output format is `http`)
+* `--report-http-add-header`: Add a header to the HTTP request (available only if output format is `http`)
 
-Available formats are: `text`, `html`, `json` and `gitlab`.
+Available formats are: `text`, `html`, `http`, `json` and `gitlab`.
 
 For a full list of options, run:
 

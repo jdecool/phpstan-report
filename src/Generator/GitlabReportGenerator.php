@@ -6,15 +6,19 @@ namespace JDecool\PHPStanReport\Generator;
 
 use JDecool\PHPStanReport\Runner\ResultCache;
 use PHPStan\Analyser\Error;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 
 final class GitlabReportGenerator implements ReportGenerator
 {
+    public function addCommandOptions(Command $command): void {}
+
     public function canBeDumpedInFile(): bool
     {
         return true;
     }
 
-    public function generate(ResultCache $result, SortField $sortBy): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy): string
     {
         $errors = [];
 
