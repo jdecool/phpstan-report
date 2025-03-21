@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JDecool\PHPStanReport\Tests\Application;
+namespace JDecool\PHPStanReport\Tests\PHPUnit\Application;
 
 use Faker;
 use JDecool\PHPStanReport\Application\Context;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArgvInput;
 
-class ContextTest extends TestCase
+final class ContextTest extends TestCase
 {
     private Faker\Generator $faker;
 
