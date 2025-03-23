@@ -10,8 +10,6 @@ class NumberFormatterFactory
 {
     public function create(): NumberFormatter
     {
-        $locale = setlocale(LC_ALL, '');
-
-        return new NumberFormatter($locale, NumberFormatter::DECIMAL);
+        return new NumberFormatter('en_US', NumberFormatter::DECIMAL);
     }
 }
