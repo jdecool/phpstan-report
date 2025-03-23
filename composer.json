@@ -72,7 +72,7 @@
             "@cs",
             "@phpstan"
         ],
-        "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon",
+        "phpstan": "php tools/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=256M",
         "test": "php vendor/bin/phpunit"
     }
 }

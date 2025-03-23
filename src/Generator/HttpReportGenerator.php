@@ -37,7 +37,7 @@ final class HttpReportGenerator implements ReportGenerator
             throw new InvalidArgumentException('Target URL must be provided with --report-http-target-url option');
         }
 
-        if (!filter_var($targetUrl, FILTER_VALIDATE_URL)) {
+        if (filter_var($targetUrl, FILTER_VALIDATE_URL) === false) {
             throw new InvalidArgumentException('Invalid target URL provided');
         }
 

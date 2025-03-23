@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>PHPStan Report</title>
+  </head>
+  <body>
+    <h1>PHPStan Report</h1>
+
+    <table>
+      <tr>
+        <td><b>Level</b></td>
+        <td>max</td>
+      </tr>
+      <tr>
+        <td><b>Total error(s)</b></td>
+        <td>6</td>
+      </tr>
+      <tr>
+        <td><b>Error(s)</b></td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td><b>Locally ignored error(s)</b></td>
+        <td>4</td>
+      </tr>
+    </table>
+
+    <hr>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Identifier</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>class.notFound</td><td>2</td></tr><tr><td>argument.type</td><td>1</td></tr><tr><td>binaryOp.invalid</td><td>1</td></tr><tr><td>missingType.property</td><td>1</td></tr><tr><td>variable.undefined</td><td>1</td></tr>      </tbody>
+      <tfoot>
+        <tr>
+          <th><b>Total</b></th>
+          <td>6</td>
+        </tr>
+      </tfoot>
+    </table><h2>class.notFound</h2><ul><li>/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php:7 - Parameter $date of method JDecool\TestPhpstan\HelloWorld::sayHello() has invalid type JDecool\TestPhpstan\DateTimeImutable.</li><li>/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php:14 - Call to method format() on an unknown class JDecool\TestPhpstan\DateTimeImutable.</li></ul><h2>argument.type</h2><ul><li>/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php:46 - Parameter #1 $e of method JDecool\TestPhpstan\Collection<int>::add() expects int, string given.</li></ul><h2>binaryOp.invalid</h2><ul><li>/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php:14 - Binary operation "." between 'Hello, ' and mixed results in an error.</li></ul><h2>missingType.property</h2><ul><li>/home/jdecool/Workspace/sandbox/test-phpstan/src/Foo.php:10 - Property JDecool\TestPhpstan\Foo::$layout has no type specified.</li></ul><h2>variable.undefined</h2><ul><li>/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php:12 - Undefined variable: $foo</li></ul>  </body>
+</html>

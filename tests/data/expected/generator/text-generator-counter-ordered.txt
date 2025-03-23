@@ -1,0 +1,22 @@
+Processing results...
+
+* Level: max
+* Total error(s): 6
+  * Error(s): 2
+  * Locally ignored error(s): 4
+  * Line(s) to ignore: 2
+
+Summary
+-------
+
++----------------------+-------+
+| Identifier           | Count |
++----------------------+-------+
+| class.notFound       | 2     |
+| argument.type        | 1     |
+| binaryOp.invalid     | 1     |
+| missingType.property | 1     |
+| variable.undefined   | 1     |
++----------------------+-------+
+| Total                | 6     |
++----------------------+-------+

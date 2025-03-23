@@ -1,0 +1,68 @@
+[
+  {
+    "description": "Parameter $date of method JDecool\\TestPhpstan\\HelloWorld::sayHello() has invalid type JDecool\\TestPhpstan\\DateTimeImutable.",
+    "fingerprint": "f8df57b6e2eda2120102bea4ccb48484d1d43bfa96e60b47e5249b9a3885916f",
+    "severity": "major",
+    "location": {
+      "path": "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php",
+      "lines": {
+        "begin": 7
+      }
+    }
+  },
+  {
+    "description": "Parameter #1 $e of method JDecool\\TestPhpstan\\Collection<int>::add() expects int, string given.",
+    "fingerprint": "06f69b84f29fbf9666ad6eb65da3b2b434cd074c5bea1804d87d2f72d2b0a5a8",
+    "severity": "major",
+    "location": {
+      "path": "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php",
+      "lines": {
+        "begin": 46
+      }
+    }
+  },
+  {
+    "description": "Property JDecool\\TestPhpstan\\Foo::$layout has no type specified.",
+    "fingerprint": "bfa0ca9bbeb3de3b5cbe96afdaac2d88b10abd4a26240aa32fa61c3e303c7ca4",
+    "severity": "major",
+    "location": {
+      "path": "/home/jdecool/Workspace/sandbox/test-phpstan/src/Foo.php",
+      "lines": {
+        "begin": 10
+      }
+    }
+  },
+  {
+    "description": "Undefined variable: $foo",
+    "fingerprint": "432b2c8ef6d067d2b23fa9ee5afe80aaa1e0a5a4b21bd4d22d8f8186fef28e6b",
+    "severity": "major",
+    "location": {
+      "path": "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php",
+      "lines": {
+        "begin": 12
+      }
+    }
+  },
+  {
+    "description": "Binary operation \".\" between 'Hello, ' and mixed results in an error.",
+    "fingerprint": "9d4d4912eb01cdd43017aee439ba4f564dfdcbc7def3e04a56bc80d5098b783e",
+    "severity": "major",
+    "location": {
+      "path": "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php",
+      "lines": {
+        "begin": 14
+      }
+    }
+  },
+  {
+    "description": "Call to method format() on an unknown class JDecool\\TestPhpstan\\DateTimeImutable.",
+    "fingerprint": "5b60728fdd917945d0511cc8ad014ff77bec6bec6a4e1acc119e8df8a207400d",
+    "severity": "major",
+    "location": {
+      "path": "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php",
+      "lines": {
+        "begin": 14
+      }
+    }
+  }
+]
