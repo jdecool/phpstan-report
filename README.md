@@ -31,7 +31,7 @@ $ php vendor/bin/phpstan-report analyze
 * `--report-without-analyze`: Generate a report without running the PHPStan analysis
 * `--report-continue-on-error`: Continue report generation even if the analysis fails
 * `--report-maximum-allowed-errors`: Set the maximum number of allowed errors
-* `--report-sort-by`: Sort the report results (options: identifier, counter)
+* `--report-sort-by`: Sort the report results (options: identifier, occurrence)
 * `--report-exclude-identifier`: Identifier to exclude from the report (accepts multiple values)
 * `--report-file-<format>`: Export report in an output file for a particular format
 * `--report-http-target-url`: The target URL to send the report to (available only if output format is `http`)

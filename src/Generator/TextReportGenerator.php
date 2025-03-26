@@ -62,7 +62,7 @@ final class TextReportGenerator implements ReportGenerator
         $errorsMap = $result->getErrorsMap();
         match ($sortBy) {
             SortField::Identifier => ksort($errorsMap),
-            SortField::Counter => arsort($errorsMap),
+            SortField::Occurrence => arsort($errorsMap),
         };
 
         $rows = [];

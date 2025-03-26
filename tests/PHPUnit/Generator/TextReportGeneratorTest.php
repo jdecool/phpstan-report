@@ -47,7 +47,7 @@ final class TextReportGeneratorTest extends TestCase
         ];
 
         yield [
-            SortField::Counter,
+            SortField::Occurrence,
             file_get_contents(__DIR__ . '/../../data/expected/generator/text-generator-counter-ordered.txt'),
         ];
     }

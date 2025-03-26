@@ -44,7 +44,7 @@ final class JsonReportGeneratorTest extends TestCase
         ];
 
         yield [
-            SortField::Counter,
+            SortField::Occurrence,
             file_get_contents(__DIR__ . '/../../data/expected/generator/json-generator-counter-ordered.json'),
         ];
     }

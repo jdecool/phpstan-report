@@ -44,7 +44,7 @@ final class GitlabGeneratorTest extends TestCase
         ];
 
         yield [
-            SortField::Counter,
+            SortField::Occurrence,
             file_get_contents(__DIR__ . '/../../data/expected/generator/gitlab-generator-counter-ordered.json'),
         ];
     }

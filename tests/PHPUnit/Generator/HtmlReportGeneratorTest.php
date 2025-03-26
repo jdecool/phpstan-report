@@ -47,7 +47,7 @@ final class HtmlReportGeneratorTest extends TestCase
         ];
 
         yield [
-            SortField::Counter,
+            SortField::Occurrence,
             file_get_contents(__DIR__ . '/../../data/expected/generator/html-generator-counter-ordered.html'),
         ];
     }

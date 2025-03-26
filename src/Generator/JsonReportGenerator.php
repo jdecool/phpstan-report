@@ -23,7 +23,7 @@ final class JsonReportGenerator implements ReportGenerator
 
         match ($sortBy) {
             SortField::Identifier => ksort($data['errors_map']),
-            SortField::Counter => arsort($data['errors_map']),
+            SortField::Occurrence => arsort($data['errors_map']),
         };
 
         return json_encode($data, flags: JSON_PRETTY_PRINT);

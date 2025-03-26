@@ -7,7 +7,7 @@ namespace JDecool\PHPStanReport\Generator;
 enum SortField: string
 {
     case Identifier = 'identifier';
-    case Counter = 'counter';
+    case Occurrence = 'occurrence';
 
     /**
      * @return string[]
