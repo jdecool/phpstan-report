@@ -56,6 +56,11 @@ final class PHPStanRunner
         $this->logger->debug("Execute command: {$command}");
 
         $content = shell_exec($command);
+
+        if (!is_string($content)) {
+            throw new RuntimeException('Unable to retrieve PHPStan information.');
+        }
+
         $content = str_replace(['\\<', '\\>'], ['\\\\<', '\\\\>'], $content); // fix PHPStan JSON output escaping
 
         $phpstanParameters = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
