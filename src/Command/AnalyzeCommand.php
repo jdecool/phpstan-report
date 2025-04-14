@@ -49,6 +49,14 @@ final class AnalyzeCommand extends Command
         }
     }
 
+    /**
+     * @return string[]
+     */
+    public function getAliases(): array
+    {
+        return ['analyse'];
+    }
+
     protected function configure(): void
     {
         $this->ignoreValidationErrors();
