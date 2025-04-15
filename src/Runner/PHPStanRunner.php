@@ -74,7 +74,6 @@ final class PHPStanRunner
 
         $cmd = $argv;
         $cmd[0] = $this->context->getPhpstanBinary();
-        $cmd[1] = 'analyze';
         array_unshift($cmd, PHP_BINARY);
 
         $cmd = implode(' ', array_filter(
