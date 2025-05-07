@@ -46,7 +46,7 @@ final class HttpReportGenerator implements ReportGenerator
         try {
             $result = $this->http->send($targetUrl, $result->toArray(), $headers);
         } catch (Throwable $e) {
-            return "Failed to send report to $targetUrl: {$e->getMessage()}";
+            throw new ReportGenerationException("Failed to send report to $targetUrl: {$e->getMessage()}", previous: $e);
         }
 
         return "Report sent to $targetUrl (HTTP status: {$result['http_code']})";
