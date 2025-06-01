@@ -70,6 +70,7 @@ final class AnalyzeCommand extends Command
         $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
         $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::Identifier->value);
         $this->addOption('report-exclude-identifier', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Identifier to exclude from the report');
+        $this->addOption('report-heatmap', null, InputOption::VALUE_OPTIONAL, 'Generate a heatmap of files with most ignored errors and save to specified path');
 
         /**
          * @var ReportGenerator $generator
