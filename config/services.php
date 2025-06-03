@@ -5,6 +5,7 @@ declare(strict_types=1);
 use JDecool\PHPStanReport\Application;
 use JDecool\PHPStanReport\Command\AnalyzeCommand;
 use JDecool\PHPStanReport\Generator\GitlabReportGenerator;
+use JDecool\PHPStanReport\Generator\HeatmapReportGenerator;
 use JDecool\PHPStanReport\Generator\HtmlReportGenerator;
 use JDecool\PHPStanReport\Generator\HttpReportGenerator;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
@@ -37,6 +38,7 @@ return static function (ContainerConfigurator $configurator): void {
     $services->set(NumberFormatter::class, NumberFormatter::class)->factory([service(NumberFormatterFactory::class), 'create']);
 
     $services->set(GitlabReportGenerator::class)->tag('app.report_generator');
+    $services->set(HeatmapReportGenerator::class)->tag('app.report_generator');
     $services->set(HtmlReportGenerator::class)->tag('app.report_generator');
     $services->set(HttpReportGenerator::class)->tag('app.report_generator');
     $services->set(JsonReportGenerator::class)->tag('app.report_generator');
