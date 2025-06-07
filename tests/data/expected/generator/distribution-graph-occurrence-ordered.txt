@@ -1,0 +1,9 @@
+Ignored Error Distribution:
+
+class.notFound                                     | ################################################## (2)
+argument.type                                      | ######################### (1)
+binaryOp.invalid                                   | ######################### (1)
+missingType.property                               | ######################### (1)
+variable.undefined                                 | ######################### (1)
+
+Total ignored errors: 6
