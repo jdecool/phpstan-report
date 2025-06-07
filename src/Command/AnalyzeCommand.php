@@ -68,7 +68,7 @@ final class AnalyzeCommand extends Command
         $this->addOption('report-output-format', null, InputOption::VALUE_OPTIONAL, 'Output format (allowed: ' . implode(', ', $this->getAllowedOutputFormats()) . ')', 'text');
         $this->addOption('report-without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
-        $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::Identifier->value);
+        $this->addOption('report-sort-by', null, InputOption::VALUE_OPTIONAL, 'Sort report result (allowed: ' . implode(', ', SortField::allowedValues()) . ')', SortField::None->value);
         $this->addOption('report-exclude-identifier', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Identifier to exclude from the report');
         $this->addOption('report-heatmap', null, InputOption::VALUE_OPTIONAL, 'Generate a heatmap of files with most ignored errors and save to specified path');
 
