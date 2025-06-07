@@ -33,7 +33,6 @@ $ php vendor/bin/phpstan-report analyze
 - `--report-sort-by`: Sort the report results (options: identifier, occurrence)
 - `--report-exclude-identifier`: Identifier to exclude from the report (accepts multiple values)
 - `--report-file-<format>`: Export report in an output file for a particular format
-- `--report-heatmap`: Generate a heatmap of files with the most ignored errors and save to specified path
 - `--report-http-target-url`: The target URL to send the report to (available only if output format is `http`)
 - `--report-http-add-header`: Add a header to the HTTP request (available only if output format is `http`)
 
@@ -68,5 +67,5 @@ $ php vendor/bin/phpstan-report analyze --report-continue-on-error --report-file
 Generate a heatmap report of files with most ignored errors:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze --report-heatmap=heatmap.md src
+$ php vendor/bin/phpstan-report analyze --report-file-heatmap=heatmap.svg src
 ```
