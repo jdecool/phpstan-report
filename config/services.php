@@ -10,6 +10,7 @@ use JDecool\PHPStanReport\Generator\HtmlReportGenerator;
 use JDecool\PHPStanReport\Generator\HttpReportGenerator;
 use JDecool\PHPStanReport\Generator\JsonReportGenerator;
 use JDecool\PHPStanReport\Generator\NumberFormatterFactory;
+use JDecool\PHPStanReport\Generator\SvgReportGenerator;
 use JDecool\PHPStanReport\Generator\TextReportGenerator;
 use JDecool\PHPStanReport\Logger\LoggerFactory;
 use Monolog\Logger;
@@ -42,6 +43,7 @@ return static function (ContainerConfigurator $configurator): void {
     $services->set(HtmlReportGenerator::class)->tag('app.report_generator');
     $services->set(HttpReportGenerator::class)->tag('app.report_generator');
     $services->set(JsonReportGenerator::class)->tag('app.report_generator');
+    $services->set(SvgReportGenerator::class)->tag('app.report_generator');
     $services->set(TextReportGenerator::class)->tag('app.report_generator');
     $services->set(AnalyzeCommand::class)->arg('$generator', tagged_locator('app.report_generator', defaultIndexMethod: 'format'));
 
