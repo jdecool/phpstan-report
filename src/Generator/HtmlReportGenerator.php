@@ -22,7 +22,7 @@ final class HtmlReportGenerator implements ReportGenerator
         return true;
     }
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string
     {
         $html = <<<HTML
 <html>
@@ -67,6 +67,7 @@ HTML;
         match ($sortBy) {
             SortField::Identifier => ksort($errorsMap),
             SortField::Occurrence => arsort($errorsMap),
+            SortField::None => $errorsMap,
         };
 
         foreach ($errorsMap as $identifier => $count) {

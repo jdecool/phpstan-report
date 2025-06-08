@@ -18,7 +18,7 @@ final class GitlabReportGenerator implements ReportGenerator
         return true;
     }
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string
     {
         $errors = [];
 

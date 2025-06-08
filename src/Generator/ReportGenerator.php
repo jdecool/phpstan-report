@@ -14,7 +14,7 @@ interface ReportGenerator
 
     public function canBeDumpedInFile(): bool;
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy): string;
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string;
 
     public static function format(): string;
 }

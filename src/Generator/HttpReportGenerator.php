@@ -29,7 +29,7 @@ final class HttpReportGenerator implements ReportGenerator
         return false;
     }
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string
     {
         $targetUrl = $input->getOption('report-http-target-url');
 

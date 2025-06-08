@@ -43,13 +43,14 @@ final class HeatmapReportGenerator implements ReportGenerator
         return true;
     }
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string
     {
         $data = $result->toArray();
 
         match ($sortBy) {
             SortField::Identifier => ksort($data['errors_map']),
             SortField::Occurrence => arsort($data['errors_map']),
+            SortField::None => $data['errors_map'],
         };
 
         return $this->generateHeatmap($data['errors_map'], $result->countTotalErrors(), $result->getLevel());

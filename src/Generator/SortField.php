@@ -6,6 +6,7 @@ namespace JDecool\PHPStanReport\Generator;
 
 enum SortField: string
 {
+    case None = 'none';
     case Identifier = 'identifier';
     case Occurrence = 'occurrence';
 
@@ -14,6 +15,9 @@ enum SortField: string
      */
     public static function allowedValues(): array
     {
-        return array_map(static fn(self $field): string => $field->value, self::cases());
+        return array_map(
+            static fn(self $field): string => $field->value,
+            array_filter(self::cases(), static fn(self $field): bool => $field !== self::None),
+        );
     }
 }

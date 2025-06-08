@@ -17,13 +17,14 @@ final class JsonReportGenerator implements ReportGenerator
         return true;
     }
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::Identifier): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string
     {
         $data = $result->toArray();
 
         match ($sortBy) {
             SortField::Identifier => ksort($data['errors_map']),
             SortField::Occurrence => arsort($data['errors_map']),
+            SortField::None => $data['errors_map'],
         };
 
         return json_encode($data, flags: JSON_PRETTY_PRINT);
