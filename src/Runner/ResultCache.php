@@ -92,13 +92,15 @@ abstract class ResultCache
     /**
      * @return Error[]
      */
-    public function filterByIdentifier(string $identifier): array
+    public function filterByIdentifier(string $identifier, string ...$identifiers): array
     {
+        $identifiers = array_merge([$identifier], $identifiers);
+
         $map = [];
 
         foreach ($this->getErrors() as $errors) {
             foreach ($errors as $error) {
-                if ($error->getIdentifier() !== $identifier) {
+                if (!in_array($error->getIdentifier(), $identifiers, true)) {
                     continue;
                 }
 
@@ -108,7 +110,7 @@ abstract class ResultCache
 
         foreach ($this->getLocallyIgnoredErrors() as $errors) {
             foreach ($errors as $error) {
-                if ($error->getIdentifier() !== $identifier) {
+                if (!in_array($error->getIdentifier(), $identifiers, true)) {
                     continue;
                 }
 
