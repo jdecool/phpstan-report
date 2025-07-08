@@ -18,13 +18,17 @@ composer require --dev jdecool/phpstan-report
 
 ## Usage
 
-The main command provided by this package is `analyze`. Here's the basic usage:
+This package provides two main commands:
+
+### Analyze Command
+
+The `analyze` command runs PHPStan analysis and generates reports on ignored errors:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze
+php vendor/bin/phpstan-report analyze
 ```
 
-## Options
+#### Options
 
 - `--report-output-format`: Specify the output format for the report
 - `--report-without-analyze`: Generate a report without running the PHPStan analysis
@@ -41,7 +45,31 @@ Available formats are: `text`, `html`, `http`, `json`, `gitlab` and `heatmap`.
 For a full list of options, run:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze --help
+php vendor/bin/phpstan-report analyze --help
+```
+
+### View Command
+
+The `view` command displays detailed information about specific ignored errors from the PHPStan result cache:
+
+```bash
+php vendor/bin/phpstan-report view <identifier> [<identifier>...]
+```
+
+This command allows you to examine specific error identifiers without running a new analysis.
+
+#### Options
+
+The `view` command takes error identifiers as arguments and displays detailed information about those errors in a table format showing:
+- Error identifier
+- Error message
+- File path
+- Line number
+
+For help with the view command, run:
+
+```bash
+php vendor/bin/phpstan-report view --help
 ```
 
 ## Examples
@@ -49,23 +77,37 @@ $ php vendor/bin/phpstan-report analyze --help
 Run analysis and generate a text report:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze src tests
+php vendor/bin/phpstan-report analyze src tests
 ```
 
 Generate an HTML report without running analysis:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze --report-without-analyze --report-output-format=html
+php vendor/bin/phpstan-report analyze --report-without-analyze --report-output-format=html
 ```
 
 Run analysis, continue on error, and save report to a file:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze --report-continue-on-error --report-file-json=report.json src
+php vendor/bin/phpstan-report analyze --report-continue-on-error --report-file-json=report.json src
 ```
 
 Generate a heatmap report of files with most ignored errors:
 
 ```bash
-$ php vendor/bin/phpstan-report analyze --report-file-heatmap=heatmap.svg src
+php vendor/bin/phpstan-report analyze --report-file-heatmap=heatmap.svg src
+```
+
+### View Command Examples
+
+View details about a specific error identifier:
+
+```bash
+php vendor/bin/phpstan-report view "missingType.iterableValue"
+```
+
+View details about multiple error identifiers:
+
+```bash
+php vendor/bin/phpstan-report view "missingType.iterableValue" "nullCoalesce.expr"
 ```
