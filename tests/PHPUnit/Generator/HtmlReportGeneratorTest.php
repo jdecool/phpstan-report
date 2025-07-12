@@ -34,6 +34,7 @@ final class HtmlReportGeneratorTest extends TestCase
             $this->createMock(InputInterface::class),
             PHPStanResultCache::fromFile(__DIR__ . '/../../data/cache.php'),
             $sort,
+            '2025-01-01 12:00:00',
         );
 
         self::assertEquals($expected, $output);
