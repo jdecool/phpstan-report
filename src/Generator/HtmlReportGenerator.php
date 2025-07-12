@@ -22,47 +22,8 @@ final class HtmlReportGenerator implements ReportGenerator
         return true;
     }
 
-    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None): string
+    public function generate(InputInterface $input, ResultCache $result, SortField $sortBy = SortField::None, ?string $timestamp = null): string
     {
-        $html = <<<HTML
-<html>
-  <head>
-    <title>PHPStan Report</title>
-  </head>
-  <body>
-    <h1>PHPStan Report</h1>
-
-    <table>
-      <tr>
-        <td><b>Level</b></td>
-        <td>{$result->getLevel()}</td>
-      </tr>
-      <tr>
-        <td><b>Total error(s)</b></td>
-        <td>{$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}</td>
-      </tr>
-      <tr>
-        <td><b>Error(s)</b></td>
-        <td>{$this->formatter->format($result->countErrors(), NumberFormatter::DECIMAL)}</td>
-      </tr>
-      <tr>
-        <td><b>Locally ignored error(s)</b></td>
-        <td>{$this->formatter->format($result->countLocallyIgnoredErrors(), NumberFormatter::DECIMAL)}</td>
-      </tr>
-    </table>
-
-    <hr>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Identifier</th>
-          <th>Count</th>
-        </tr>
-      </thead>
-      <tbody>
-HTML;
-
         $errorsMap = $result->getErrorsMap();
         match ($sortBy) {
             SortField::Identifier => ksort($errorsMap),
@@ -70,49 +31,713 @@ HTML;
             SortField::None => $errorsMap,
         };
 
-        foreach ($errorsMap as $identifier => $count) {
-            $html .= "<tr><td>$identifier</td><td>{$this->formatter->format($count, NumberFormatter::DECIMAL)}</td></tr>";
-        }
+        $totalErrors = $result->countTotalErrors();
+        $errorCount = $result->countErrors();
+        $ignoredCount = $result->countLocallyIgnoredErrors();
+        $level = $result->getLevel();
+        $timestamp = $timestamp ?? date('Y-m-d H:i:s');
 
-        $html .= <<<HTML
-      </tbody>
-      <tfoot>
-        <tr>
-          <th><b>Total</b></th>
-          <td>{$this->formatter->format($result->countTotalErrors(), NumberFormatter::DECIMAL)}</td>
-        </tr>
-      </tfoot>
-    </table>
-HTML;
-
-        foreach ($errorsMap as $identifier => $_) {
-            $html .= "<h2>$identifier</h2>";
-
-            $errors = $result->filterByIdentifier($identifier);
-
-            if (!empty($errors)) {
-                $html .= '<ul>';
-            }
-
-            foreach ($errors as $error) {
-                $html .= "<li>{$error->getFile()}:{$error->getLine()} - {$error->getMessage()}</li>";
-            }
-
-            if (!empty($errors)) {
-                $html .= '</ul>';
-            }
-        }
-
-        $html .= <<<HTML
-  </body>
-</html>
-HTML;
-
-        return $html;
+        return $this->generateHtmlStructure($errorsMap, $result, $totalErrors, $errorCount, $ignoredCount, $level, $timestamp);
     }
 
     public static function format(): string
     {
         return 'html';
+    }
+
+    /**
+     * @param array<string, int> $errorsMap
+     */
+    private function generateHtmlStructure(
+        array $errorsMap,
+        ResultCache $result,
+        int $totalErrors,
+        int $errorCount,
+        int $ignoredCount,
+        string $level,
+        string $timestamp,
+    ): string {
+        $html = $this->generateHtmlHeader();
+        $html .= $this->generateSummarySection($totalErrors, $errorCount, $ignoredCount, $level, $timestamp);
+        $html .= $this->generateErrorsOverview($errorsMap, $totalErrors);
+        $html .= $this->generateErrorDetails($errorsMap, $result);
+        $html .= $this->generateHtmlFooter();
+
+        return $html;
+    }
+
+    private function generateHtmlHeader(): string
+    {
+        return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHPStan Analysis Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --md-primary: #1976d2;
+            --md-primary-dark: #1565c0;
+            --md-primary-light: #42a5f5;
+            --md-secondary: #dc004e;
+            --md-error: #d32f2f;
+            --md-warning: #f57c00;
+            --md-success: #388e3c;
+            --md-surface: #ffffff;
+            --md-background: #fafafa;
+            --md-on-surface: #212121;
+            --md-on-primary: #ffffff;
+            --md-outline: #e0e0e0;
+            --md-surface-variant: #f5f5f5;
+            --md-on-surface-variant: #424242;
+            --md-shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --md-shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --md-shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            --md-shadow-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+        }
+
+        [data-theme="dark"] {
+            --md-primary: #90caf9;
+            --md-primary-dark: #64b5f6;
+            --md-primary-light: #bbdefb;
+            --md-secondary: #f48fb1;
+            --md-error: #f44336;
+            --md-warning: #ff9800;
+            --md-success: #4caf50;
+            --md-surface: #1e1e1e;
+            --md-background: #121212;
+            --md-on-surface: #e0e0e0;
+            --md-on-primary: #000000;
+            --md-outline: #404040;
+            --md-surface-variant: #2d2d2d;
+            --md-on-surface-variant: #b0b0b0;
+            --md-shadow-1: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
+            --md-shadow-2: 0 3px 6px rgba(0,0,0,0.6), 0 3px 6px rgba(0,0,0,0.7);
+            --md-shadow-3: 0 10px 20px rgba(0,0,0,0.7), 0 6px 6px rgba(0,0,0,0.8);
+            --md-shadow-4: 0 14px 28px rgba(0,0,0,0.8), 0 10px 10px rgba(0,0,0,0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.5;
+            color: var(--md-on-surface);
+            background-color: var(--md-background);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            background-color: var(--md-surface);
+            border-radius: 8px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--md-shadow-2);
+            text-align: center;
+            elevation: 2;
+        }
+
+        .header h1 {
+            color: var(--md-primary);
+            font-size: 2.125rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+            letter-spacing: 0.0073529412em;
+        }
+
+        .header .subtitle {
+            color: var(--md-on-surface-variant);
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.009375em;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--md-surface);
+            color: var(--md-on-surface);
+            border: 2px solid var(--md-outline);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--md-shadow-2);
+            z-index: 1001;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--md-surface-variant);
+            box-shadow: var(--md-shadow-3);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle .material-icons {
+            font-size: 20px;
+        }
+
+        .card {
+            background-color: var(--md-surface);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--md-shadow-1);
+            elevation: 1;
+        }
+
+        .card h2 {
+            color: var(--md-on-surface);
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+            letter-spacing: 0.0125em;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: var(--md-primary);
+            color: var(--md-on-primary);
+            padding: 24px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: var(--md-shadow-2);
+            elevation: 2;
+            transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--md-shadow-3);
+            elevation: 3;
+        }
+
+        .stat-card.error {
+            background-color: var(--md-error);
+        }
+
+        .stat-card.warning {
+            background-color: var(--md-warning);
+        }
+
+        .stat-card.success {
+            background-color: var(--md-success);
+        }
+
+        .stat-number {
+            font-size: 2.125rem;
+            font-weight: 400;
+            margin-bottom: 4px;
+            letter-spacing: -0.00833em;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0.87;
+            letter-spacing: 0.0178571429em;
+            text-transform: uppercase;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: var(--md-shadow-1);
+            elevation: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--md-surface);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--md-outline);
+            font-size: 0.875rem;
+            letter-spacing: 0.0178571429em;
+        }
+
+        th {
+            background-color: var(--md-primary);
+            color: var(--md-on-primary);
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(25, 118, 210, 0.04);
+        }
+
+        .error-section {
+            margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--md-shadow-1);
+            elevation: 1;
+        }
+
+        .error-title {
+            background-color: var(--md-primary);
+            color: var(--md-on-primary);
+            padding: 16px 24px;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.009375em;
+            transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .error-title:hover {
+            background-color: var(--md-primary-dark);
+        }
+
+        .error-title:active {
+            background-color: var(--md-primary-dark);
+        }
+
+        .error-content {
+            background-color: var(--md-surface);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .error-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--md-outline);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .error-item:last-child {
+            border-bottom: none;
+        }
+
+        .error-item:hover {
+            background-color: rgba(25, 118, 210, 0.04);
+        }
+
+        .error-file {
+            font-family: 'Roboto Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background-color: rgba(25, 118, 210, 0.08);
+            color: var(--md-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            min-width: 200px;
+            letter-spacing: 0.0333333333em;
+        }
+
+        .error-message {
+            flex: 1;
+            color: var(--md-on-surface);
+            font-size: 0.875rem;
+            line-height: 1.43;
+            letter-spacing: 0.0178571429em;
+        }
+
+        .toggle-icon {
+            font-family: 'Material Icons';
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.25rem;
+            user-select: none;
+        }
+
+        .collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .collapsed .error-content {
+            display: none;
+        }
+
+        .timestamp {
+            color: var(--md-on-surface-variant);
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 24px;
+            font-weight: 400;
+            letter-spacing: 0.0333333333em;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--md-secondary);
+            color: white;
+            border: none;
+            box-shadow: var(--md-shadow-3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            elevation: 3;
+            opacity: 0;
+            transform: scale(0.8);
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            box-shadow: var(--md-shadow-4);
+            elevation: 4;
+            transform: scale(1.1);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        .fab .material-icons {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-number {
+                font-size: 1.75rem;
+            }
+
+            th, td {
+                padding: 12px;
+                font-size: 0.8125rem;
+            }
+
+            .error-title {
+                padding: 12px 16px;
+                font-size: 0.875rem;
+            }
+
+            .error-item {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .error-file {
+                min-width: auto;
+                align-self: flex-start;
+            }
+
+            .fab {
+                bottom: 16px;
+                right: 16px;
+                width: 48px;
+                height: 48px;
+            }
+
+            .fab .material-icons {
+                font-size: 20px;
+            }
+
+            .theme-toggle {
+                top: 16px;
+                right: 16px;
+                width: 44px;
+                height: 44px;
+            }
+
+            .theme-toggle .material-icons {
+                font-size: 18px;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --md-primary: #90caf9;
+                --md-primary-dark: #64b5f6;
+                --md-primary-light: #bbdefb;
+                --md-secondary: #f48fb1;
+                --md-error: #f44336;
+                --md-warning: #ff9800;
+                --md-success: #4caf50;
+                --md-surface: #1e1e1e;
+                --md-background: #121212;
+                --md-on-surface: #e0e0e0;
+                --md-on-primary: #000000;
+                --md-outline: #404040;
+                --md-surface-variant: #2d2d2d;
+                --md-on-surface-variant: #b0b0b0;
+                --md-shadow-1: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
+                --md-shadow-2: 0 3px 6px rgba(0,0,0,0.6), 0 3px 6px rgba(0,0,0,0.7);
+                --md-shadow-3: 0 10px 20px rgba(0,0,0,0.7), 0 6px 6px rgba(0,0,0,0.8);
+                --md-shadow-4: 0 14px 28px rgba(0,0,0,0.8), 0 10px 10px rgba(0,0,0,0.9);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <span class="material-icons" id="theme-icon">dark_mode</span>
+    </button>
+    <div class="container">
+        <div class="header">
+            <h1>PHPStan Analysis Report</h1>
+            <div class="subtitle">Static Code Analysis Results</div>
+        </div>
+HTML;
+    }
+
+    private function generateSummarySection(int $totalErrors, int $errorCount, int $ignoredCount, string $level, string $timestamp): string
+    {
+        $levelClass = $totalErrors > 0 ? 'error' : 'success';
+        $errorClass = $errorCount > 0 ? 'error' : 'success';
+        $ignoredClass = $ignoredCount > 0 ? 'warning' : 'success';
+
+        return <<<HTML
+        <div class="summary-grid">
+            <div class="stat-card">
+                <div class="stat-number">{$level}</div>
+                <div class="stat-label">Analysis Level</div>
+            </div>
+            <div class="stat-card {$levelClass}">
+                <div class="stat-number">{$this->formatter->format($totalErrors, NumberFormatter::DECIMAL)}</div>
+                <div class="stat-label">Total Errors</div>
+            </div>
+            <div class="stat-card {$errorClass}">
+                <div class="stat-number">{$this->formatter->format($errorCount, NumberFormatter::DECIMAL)}</div>
+                <div class="stat-label">Active Errors</div>
+            </div>
+            <div class="stat-card {$ignoredClass}">
+                <div class="stat-number">{$this->formatter->format($ignoredCount, NumberFormatter::DECIMAL)}</div>
+                <div class="stat-label">Ignored Errors</div>
+            </div>
+        </div>
+        <div class="timestamp">Generated on {$timestamp}</div>
+HTML;
+    }
+
+    /**
+     * @param array<string, int> $errorsMap
+     */
+    private function generateErrorsOverview(array $errorsMap, int $totalErrors): string
+    {
+        if (empty($errorsMap)) {
+            return '<div class="card"><h2>✓ No errors found!</h2><p>Your code analysis completed successfully with no issues detected.</p></div>';
+        }
+
+        $html = '<div class="card"><h2>Error Overview</h2><div class="table-container"><table>';
+        $html .= '<thead><tr><th>Error Type</th><th>Count</th><th>Percentage</th></tr></thead><tbody>';
+
+        foreach ($errorsMap as $identifier => $count) {
+            $percentage = $totalErrors > 0 ? round(($count / $totalErrors) * 100, 1) : 0;
+            $html .= "<tr><td>{$identifier}</td><td>{$this->formatter->format($count, NumberFormatter::DECIMAL)}</td><td>{$percentage}%</td></tr>";
+        }
+
+        $html .= '</tbody><tfoot><tr><th>Total</th><th>' . $this->formatter->format($totalErrors, NumberFormatter::DECIMAL) . '</th><th>100%</th></tr></tfoot></table></div></div>';
+
+        return $html;
+    }
+
+    /**
+     * @param array<string, int> $errorsMap
+     */
+    private function generateErrorDetails(array $errorsMap, ResultCache $result): string
+    {
+        if (empty($errorsMap)) {
+            return '';
+        }
+
+        $html = '<div class="card"><h2>Detailed Error Analysis</h2>';
+
+        foreach ($errorsMap as $identifier => $count) {
+            $errors = $result->filterByIdentifier($identifier);
+
+            if (empty($errors)) {
+                continue;
+            }
+
+            $html .= '<div class="error-section">';
+            $html .= "<h3 class=\"error-title\" onclick=\"toggleSection(this)\">";
+            $html .= "<span>{$identifier} ({$this->formatter->format($count, NumberFormatter::DECIMAL)} errors)</span>";
+            $html .= '<span class="toggle-icon">expand_more</span>';
+            $html .= '</h3>';
+            $html .= '<div class="error-content">';
+
+            foreach ($errors as $error) {
+                $html .= '<div class="error-item">';
+                $html .= "<div class=\"error-file\">{$error->getFile()}:{$error->getLine()}</div>";
+                $html .= "<div class=\"error-message\">{$error->getMessage()}</div>";
+                $html .= '</div>';
+            }
+
+            $html .= '</div></div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    private function generateHtmlFooter(): string
+    {
+        return <<<HTML
+    </div>
+    <button class="fab" onclick="scrollToTop()" title="Back to top">
+        <span class="material-icons">keyboard_arrow_up</span>
+    </button>
+    <script>
+        function toggleSection(element) {
+            const section = element.parentElement;
+            const content = section.querySelector('.error-content');
+            const icon = element.querySelector('.toggle-icon');
+
+            section.classList.toggle('collapsed');
+
+            if (section.classList.contains('collapsed')) {
+                content.style.display = 'none';
+                icon.textContent = 'chevron_right';
+            } else {
+                content.style.display = 'block';
+                icon.textContent = 'expand_more';
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme');
+
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                themeIcon.textContent = 'dark_mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = 'light_mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const themeIcon = document.getElementById('theme-icon');
+
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                themeIcon.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
+            } else if (prefersDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = 'light_mode';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeIcon.textContent = 'dark_mode';
+            }
+
+            // Initialize error sections
+            const sections = document.querySelectorAll('.error-section');
+            sections.forEach(section => {
+                const content = section.querySelector('.error-content');
+                if (content) {
+                    content.style.display = 'block';
+                }
+            });
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                if (!localStorage.getItem('theme')) {
+                    const themeIcon = document.getElementById('theme-icon');
+                    if (e.matches) {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        themeIcon.textContent = 'light_mode';
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        themeIcon.textContent = 'dark_mode';
+                    }
+                }
+            });
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        window.addEventListener('scroll', function() {
+            const fab = document.querySelector('.fab');
+            if (window.scrollY > 300) {
+                fab.style.opacity = '1';
+                fab.style.transform = 'scale(1)';
+            } else {
+                fab.style.opacity = '0';
+                fab.style.transform = 'scale(0.8)';
+            }
+        });
+    </script>
+</body>
+</html>
+HTML;
     }
 }
