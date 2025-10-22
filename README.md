@@ -39,6 +39,7 @@ php vendor/bin/phpstan-report analyze
 - `--report-file-<format>`: Export report in an output file for a particular format
 - `--report-http-target-url`: The target URL to send the report to (available only if output format is `http`)
 - `--report-http-add-header`: Add a header to the HTTP request (available only if output format is `http`)
+- `--report-gitlab-severity-mapping`: JSON string mapping error identifiers to GitLab severity levels (available only if output format is `gitlab`)
 
 Available formats are: `text`, `html`, `http`, `json`, `gitlab` and `heatmap`.
 
@@ -97,6 +98,15 @@ Generate a heatmap report of files with most ignored errors:
 ```bash
 php vendor/bin/phpstan-report analyze --report-file-heatmap=heatmap.svg src
 ```
+
+Generate a GitLab report with custom severity mapping:
+
+```bash
+php vendor/bin/phpstan-report analyze --report-output-format=gitlab \
+  --report-gitlab-severity-mapping='{"missingType.property":"info","argument.type":"critical"}' src
+```
+
+For more details on GitLab severity mapping, see [docs/gitlab-severity-mapping.md](docs/gitlab-severity-mapping.md).
 
 ### View Command Examples
 
