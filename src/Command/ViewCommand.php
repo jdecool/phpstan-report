@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace JDecool\PHPStanReport\Command;
 
+use Symfony\Component\Console\Input\InputOption;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
 
@@ -24,10 +26,23 @@ final class ViewCommand extends Command
     protected function configure(): void
     {
         $this->addArgument('identifier', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Error identifier');
+        $this->addOption('refresh-cache', null, InputOption::VALUE_NONE, 'Refresh PHPStan cache by running a new analyze');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if ($input->getOption('refresh-cache')) {
+            $executionResult = $this->phpstan->analyze();
+
+            if ($executionResult->hasFailed()) {
+                ($output instanceof ConsoleOutputInterface)
+                    ? $output->getErrorOutput()->write("{$executionResult->output}")
+                    : $output->write($executionResult->output);
+
+                return Command::FAILURE;
+            }
+        }
+
         $parameters = $this->phpstan->dumpParameters();
         $resultCache = $parameters->getResultCache();
 
