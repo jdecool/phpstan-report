@@ -61,6 +61,8 @@ This command allows you to examine specific error identifiers without running a 
 
 #### Options
 
+- `--refresh-cache`: Refresh PHPStan cache by running a new analysis before viewing errors
+
 The `view` command takes error identifiers as arguments and displays detailed information about those errors in a table format showing:
 - Error identifier
 - Error message
