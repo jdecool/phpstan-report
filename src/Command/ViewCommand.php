@@ -20,7 +20,12 @@ final class ViewCommand extends Command
     public function __construct(
         private readonly PHPStanRunner $phpstan,
     ) {
-        parent::__construct('view');
+        parent::__construct();
+    }
+
+    public static function getDefaultName(): string
+    {
+        return 'view';
     }
 
     protected function configure(): void

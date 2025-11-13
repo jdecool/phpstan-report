@@ -38,7 +38,7 @@ final class AnalyzeCommand extends Command
         private readonly Bridge\AnalyseCommandDefinition $analyseCommandDefinition,
         private readonly Filesystem $fs,
     ) {
-        parent::__construct('analyze');
+        parent::__construct();
 
         foreach ($this->getDefinition()->getOptions() as $option) {
             if (!str_starts_with($option->getName(), 'report-')) {
@@ -47,6 +47,11 @@ final class AnalyzeCommand extends Command
 
             $this->phpstan->registerOptionToIgnore($option->getName());
         }
+    }
+
+    public static function getDefaultName(): string
+    {
+        return 'analyze';
     }
 
     /**
