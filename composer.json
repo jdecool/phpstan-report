@@ -66,8 +66,8 @@
             "@composer normalize"
         ],
         "build": "cd tools/phar && php vendor/bin/box compile -c box.json",
-        "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
-        "cs.fix": "PHP_CS_FIXER_IGNORE_ENV=1 php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
+        "cs": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
+        "cs.fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
         "lint": [
             "@cs",
             "@phpstan"
