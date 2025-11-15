@@ -1,0 +1,18 @@
+array:1 [
+  "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php" => array:1 [
+    1 => PHPStan\Analyser\Error {
+      -message: "Parameter #1 $e of method JDecool\TestPhpstan\Collection<int>::add() expects int, string given."
+      -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -line: 46
+      -canBeIgnored: true
+      -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -traitFilePath: null
+      -tip: null
+      -nodeLine: 46
+      -nodeType: "PhpParser\Node\Expr\MethodCall"
+      -identifier: "argument.type"
+      -metadata: []
+      -fixedErrorDiff: null
+    }
+  ]
+]

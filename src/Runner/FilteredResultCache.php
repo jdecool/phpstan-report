@@ -19,6 +19,17 @@ final class FilteredResultCache extends ResultCache
 
     protected array $linesToIgnore;
 
+    public static function fromFile(string $file, array $excludedErrorIdentifiers): self
+    {
+        if (!file_exists($file)) {
+            throw new \RuntimeException("File {$file} does not exist.");
+        }
+
+        $data = require $file;
+
+        return new static($data, $excludedErrorIdentifiers);
+    }
+
     public static function fromResultatCache(ResultCache $resultCache, array $excludedErrorIdentifiers): self
     {
         return new self($resultCache->data, $excludedErrorIdentifiers);

@@ -1,0 +1,5 @@
+array:3 [
+  "argument.type" => 1
+  "missingType.property" => 1
+  "variable.undefined" => 1
+]

@@ -1,0 +1,14 @@
+array:6 [
+  "level" => "max"
+  "count_total_errors" => 6
+  "count_errors" => 2
+  "count_locally_ignored_errors" => 4
+  "count_lines_to_ignores" => 2
+  "errors_map" => array:5 [
+    "argument.type" => 1
+    "binaryOp.invalid" => 1
+    "class.notFound" => 2
+    "missingType.property" => 1
+    "variable.undefined" => 1
+  ]
+]
