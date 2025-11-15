@@ -1,0 +1,44 @@
+array:3 [
+  0 => PHPStan\Analyser\Error {
+    -message: "Parameter $date of method JDecool\TestPhpstan\HelloWorld::sayHello() has invalid type JDecool\TestPhpstan\DateTimeImutable."
+    -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+    -line: 7
+    -canBeIgnored: true
+    -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+    -traitFilePath: null
+    -tip: null
+    -nodeLine: 7
+    -nodeType: "PHPStan\Node\InClassMethodNode"
+    -identifier: "class.notFound"
+    -metadata: []
+    -fixedErrorDiff: null
+  }
+  1 => PHPStan\Analyser\Error {
+    -message: "Binary operation "." between 'Hello, ' and mixed results in an error."
+    -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+    -line: 14
+    -canBeIgnored: true
+    -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+    -traitFilePath: null
+    -tip: null
+    -nodeLine: 14
+    -nodeType: "PhpParser\Node\Expr\BinaryOp\Concat"
+    -identifier: "binaryOp.invalid"
+    -metadata: []
+    -fixedErrorDiff: null
+  }
+  2 => PHPStan\Analyser\Error {
+    -message: "Call to method format() on an unknown class JDecool\TestPhpstan\DateTimeImutable."
+    -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+    -line: 14
+    -canBeIgnored: true
+    -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+    -traitFilePath: null
+    -tip: "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    -nodeLine: 14
+    -nodeType: "PhpParser\Node\Expr\MethodCall"
+    -identifier: "class.notFound"
+    -metadata: []
+    -fixedErrorDiff: null
+  }
+]
