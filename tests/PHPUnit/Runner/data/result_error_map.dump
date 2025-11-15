@@ -1,0 +1,7 @@
+array:5 [
+  "argument.type" => 1
+  "binaryOp.invalid" => 1
+  "class.notFound" => 2
+  "missingType.property" => 1
+  "variable.undefined" => 1
+]

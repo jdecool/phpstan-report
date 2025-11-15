@@ -1,0 +1,12 @@
+array:6 [
+  "level" => "max"
+  "count_total_errors" => 3
+  "count_errors" => 1
+  "count_locally_ignored_errors" => 2
+  "count_lines_to_ignores" => 2
+  "errors_map" => array:3 [
+    "argument.type" => 1
+    "missingType.property" => 1
+    "variable.undefined" => 1
+  ]
+]

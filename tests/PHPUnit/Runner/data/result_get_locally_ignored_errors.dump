@@ -1,0 +1,62 @@
+array:2 [
+  "/home/jdecool/Workspace/sandbox/test-phpstan/src/Foo.php" => array:1 [
+    0 => PHPStan\Analyser\Error {
+      -message: "Property JDecool\TestPhpstan\Foo::$layout has no type specified."
+      -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/Foo.php"
+      -line: 10
+      -canBeIgnored: true
+      -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/Foo.php"
+      -traitFilePath: null
+      -tip: null
+      -nodeLine: 10
+      -nodeType: "PHPStan\Node\ClassPropertyNode"
+      -identifier: "missingType.property"
+      -metadata: []
+      -fixedErrorDiff: null
+    }
+  ]
+  "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php" => array:3 [
+    0 => PHPStan\Analyser\Error {
+      -message: "Undefined variable: $foo"
+      -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -line: 12
+      -canBeIgnored: true
+      -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -traitFilePath: null
+      -tip: null
+      -nodeLine: 12
+      -nodeType: "PhpParser\Node\Expr\Variable"
+      -identifier: "variable.undefined"
+      -metadata: []
+      -fixedErrorDiff: null
+    }
+    1 => PHPStan\Analyser\Error {
+      -message: "Binary operation "." between 'Hello, ' and mixed results in an error."
+      -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -line: 14
+      -canBeIgnored: true
+      -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -traitFilePath: null
+      -tip: null
+      -nodeLine: 14
+      -nodeType: "PhpParser\Node\Expr\BinaryOp\Concat"
+      -identifier: "binaryOp.invalid"
+      -metadata: []
+      -fixedErrorDiff: null
+    }
+    2 => PHPStan\Analyser\Error {
+      -message: "Call to method format() on an unknown class JDecool\TestPhpstan\DateTimeImutable."
+      -file: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -line: 14
+      -canBeIgnored: true
+      -filePath: "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php"
+      -traitFilePath: null
+      -tip: "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+      -nodeLine: 14
+      -nodeType: "PhpParser\Node\Expr\MethodCall"
+      -identifier: "class.notFound"
+      -metadata: []
+      -fixedErrorDiff: null
+    }
+  ]
+]
