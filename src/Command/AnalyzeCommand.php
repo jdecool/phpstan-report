@@ -7,6 +7,7 @@ namespace JDecool\PHPStanReport\Command;
 use JDecool\PHPStanReport\Bridge\PHPStan\Command as Bridge;
 use JDecool\PHPStanReport\Generator\ReportGenerator;
 use JDecool\PHPStanReport\Generator\SortField;
+use JDecool\PHPStanReport\Logger\ExecutionMetrics;
 use JDecool\PHPStanReport\Runner\ExecutionResult;
 use JDecool\PHPStanReport\Runner\FilteredResultCache;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
@@ -37,6 +38,7 @@ final class AnalyzeCommand extends Command
         private readonly LoggerInterface $logger,
         private readonly Bridge\AnalyseCommandDefinition $analyseCommandDefinition,
         private readonly Filesystem $fs,
+        private readonly ExecutionMetrics $metrics,
     ) {
         parent::__construct();
 
@@ -95,9 +97,13 @@ final class AnalyzeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->metrics->start();
+
         $outputFormat = $input->getOption('report-output-format');
         if (!$this->generator->has($outputFormat)) {
             $output->writeln('<error>Invalid --report-output-format value option (allowed: ' . implode(', ', $this->getAllowedOutputFormats()) . ').</error>');
+
+            $this->metrics->displayMetrics($output);
 
             return Command::INVALID;
         }
@@ -105,6 +111,8 @@ final class AnalyzeCommand extends Command
         $reportSortBy = SortField::tryFrom($input->getOption('report-sort-by'));
         if ($reportSortBy === null) {
             $output->writeln('<error>Invalid --report-sort-by value option (allowed: ' . implode(', ', SortField::allowedValues()) . ').</error>');
+
+            $this->metrics->displayMetrics($output);
 
             return Command::INVALID;
         }
@@ -159,6 +167,8 @@ final class AnalyzeCommand extends Command
                 $executionResult = $executionResult->hasFailed() ? $executionResult : new ExecutionResult(255, $executionResult->output);
             }
         }
+
+        $this->metrics->displayMetrics($output);
 
         return $executionResult->exitCode;
     }
