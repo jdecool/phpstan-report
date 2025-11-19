@@ -6,16 +6,19 @@ namespace JDecool\PHPStanReport\Runner;
 
 use PHPStan\Analyser\Error;
 
+use function Amp\async;
+use function Amp\Future\await;
+
 /**
  * @phpstan-type ErrorCollection array<string, Error[]>
  */
 abstract class ResultCache
 {
-    protected int $countTotalErrors;
+    protected array $rawData;
 
-    protected int $countErrors;
+    protected ErrorContainer $errors;
 
-    protected int $countLocallyIgnoredErrors;
+    protected ErrorContainer $locallyIgnoredErrors;
 
     protected int $countLinesToIgnore;
 
@@ -24,13 +27,38 @@ abstract class ResultCache
      */
     protected array $errorMap = [];
 
-    public function __construct(
-        protected readonly array $data,
-    ) {}
+    public function __construct(array $data)
+    {
+        $this->rawData = $this->initialize($data);
+    }
 
     public function getLevel(): string
     {
-        return $this->data['meta']['level'];
+        return $this->rawData['meta']['level'];
+    }
+
+    /**
+     * @return ErrorCollection
+     */
+    public function getErrors(): array
+    {
+        return $this->errors->getRawErrors();
+    }
+
+    /**
+     * @return ErrorCollection
+     */
+    public function getLocallyIgnoredErrors(): array
+    {
+        return $this->locallyIgnoredErrors->getRawErrors();
+    }
+
+    /**
+     * @return array<string, array<string, array<int, null>>>
+     */
+    public function getLinesToIgnore(): array
+    {
+        return $this->rawData['linesToIgnore'];
     }
 
     /**
@@ -42,20 +70,11 @@ abstract class ResultCache
             return $this->errorMap;
         }
 
-        $map = [];
+        $map = $this->errors->getMap();
 
-        foreach ($this->getErrors() as $errors) {
-            foreach ($errors as $error) {
-                $map[$error->getIdentifier()] ??= 0;
-                $map[$error->getIdentifier()]++;
-            }
-        }
-
-        foreach ($this->getLocallyIgnoredErrors() as $errors) {
-            foreach ($errors as $error) {
-                $map[$error->getIdentifier()] ??= 0;
-                $map[$error->getIdentifier()]++;
-            }
+        foreach ($this->locallyIgnoredErrors->getMap() as $identifier => $counter) {
+            $map[$identifier] ??= 0;
+            $map[$identifier] += $counter;
         }
 
         ksort($map);
@@ -65,17 +84,17 @@ abstract class ResultCache
 
     public function countTotalErrors(): int
     {
-        return $this->countTotalErrors ??= $this->countErrors() + $this->countLocallyIgnoredErrors();
+        return $this->errors->getTotalErrors() + $this->locallyIgnoredErrors->getTotalErrors();
     }
 
     public function countErrors(): int
     {
-        return $this->countErrors ??= $this->computerErrors($this->getErrors());
+        return $this->errors->getTotalErrors();
     }
 
     public function countLocallyIgnoredErrors(): int
     {
-        return $this->countLocallyIgnoredErrors ??= $this->computerErrors($this->getLocallyIgnoredErrors());
+        return $this->locallyIgnoredErrors->getTotalErrors();
     }
 
     public function countLinesToIgnore(): int
@@ -94,28 +113,16 @@ abstract class ResultCache
      */
     public function filterByIdentifier(string $identifier, string ...$identifiers): array
     {
-        $identifiers = array_merge([$identifier], $identifiers);
+        $errorsIdentifiers = array_merge([$identifier], $identifiers);
 
         $map = [];
 
-        foreach ($this->getErrors() as $errors) {
-            foreach ($errors as $error) {
-                if (!in_array($error->getIdentifier(), $identifiers, true)) {
-                    continue;
-                }
-
-                $map[] = $error;
-            }
-        }
-
-        foreach ($this->getLocallyIgnoredErrors() as $errors) {
-            foreach ($errors as $error) {
-                if (!in_array($error->getIdentifier(), $identifiers, true)) {
-                    continue;
-                }
-
-                $map[] = $error;
-            }
+        foreach ($errorsIdentifiers as $errorIdentifier) {
+            $map = array_merge(
+                $map,
+                $this->errors->getByIdentifier($errorIdentifier),
+                $this->locallyIgnoredErrors->getByIdentifier($errorIdentifier),
+            );
         }
 
         return $map;
@@ -133,30 +140,35 @@ abstract class ResultCache
         ];
     }
 
-    /**
-     * @param ErrorCollection $errors
-     */
-    protected function computerErrors(array $errors): int
+    protected function initialize(array $data): array
     {
-        return array_reduce(
-            $errors,
-            static fn(int $counter, array $error): int => $counter + count($error),
-            0,
-        );
+        [$this->errors, $this->locallyIgnoredErrors] = await([
+            async(fn() => $this->filterErrors($data['errorsCallback'])),
+            async(fn() => $this->filterErrors($data['locallyIgnoredErrorsCallback'])),
+        ]);
+
+        return $data;
     }
 
-    /**
-     * @return ErrorCollection
-     */
-    abstract public function getErrors(): array;
+    protected function filterErrors(callable $fn): ErrorContainer
+    {
+        $container = new ErrorContainer();
 
-    /**
-     * @return ErrorCollection
-     */
-    abstract public function getLocallyIgnoredErrors(): array;
+        foreach ($fn() as $file => $errors) {
+            foreach ($errors as $error) {
+                if ($this->isExcludedError($error)) {
+                    continue;
+                }
 
-    /**
-     * @return array<string, array<string, array<int, null>>>
-     */
-    abstract public function getLinesToIgnore(): array;
+                $container->addError($file, $error);
+            }
+        }
+
+        return $container;
+    }
+
+    protected function isExcludedError(Error $error): bool
+    {
+        return false;
+    }
 }
