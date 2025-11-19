@@ -69,7 +69,7 @@ final class AnalyzeCommand extends Command
         // setup PHPStan analyze command definition
         $this->setDefinition($this->analyseCommandDefinition->getInputDefinition());
 
-        $this->addOption('report-continue-on-error', null, InputOption::VALUE_NONE, 'Continue the analysis if error occured');
+        $this->addOption('report-continue-on-error', null, InputOption::VALUE_NONE, 'Continue the analysis if error occurred');
         $this->addOption('report-output-format', null, InputOption::VALUE_OPTIONAL, 'Output format (allowed: ' . implode(', ', $this->getAllowedOutputFormats()) . ')', 'text');
         $this->addOption('report-without-analyze', null, InputOption::VALUE_NONE, 'Do not run the analysis');
         $this->addOption('report-maximum-allowed-errors', null, InputOption::VALUE_OPTIONAL, 'Maximum allowed errors');
