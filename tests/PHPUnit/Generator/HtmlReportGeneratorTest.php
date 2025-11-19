@@ -8,9 +8,9 @@ use JDecool\PHPStanReport\Generator\HtmlReportGenerator;
 use JDecool\PHPStanReport\Generator\NumberFormatterFactory;
 use JDecool\PHPStanReport\Generator\SortField;
 use JDecool\PHPStanReport\Runner\PHPStanResultCache;
+use JDecool\PHPStanReport\Tests\PHPUnit\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\InputInterface;
 
 final class HtmlReportGeneratorTest extends TestCase
@@ -28,7 +28,7 @@ final class HtmlReportGeneratorTest extends TestCase
 
     #[Test]
     #[DataProvider('generateReportProvider')]
-    public function generateReport(SortField $sort, string $expected): void
+    public function generateReport(SortField $sort, string $expectedFile): void
     {
         $output = $this->generator->generate(
             $this->createMock(InputInterface::class),
@@ -37,6 +37,8 @@ final class HtmlReportGeneratorTest extends TestCase
             '2025-01-01 12:00:00',
         );
 
+        $expected = file_get_contents($expectedFile);
+
         self::assertEquals($expected, $output);
     }
 
@@ -44,12 +46,12 @@ final class HtmlReportGeneratorTest extends TestCase
     {
         yield [
             SortField::Identifier,
-            file_get_contents(__DIR__ . '/../../data/expected/generator/html-generator-identifier-ordered.html'),
+            __DIR__ . '/../../data/expected/generator/html-generator-identifier-ordered.html',
         ];
 
         yield [
             SortField::Occurrence,
-            file_get_contents(__DIR__ . '/../../data/expected/generator/html-generator-counter-ordered.html'),
+            __DIR__ . '/../../data/expected/generator/html-generator-counter-ordered.html',
         ];
     }
 }
