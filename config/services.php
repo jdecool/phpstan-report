@@ -45,7 +45,10 @@ return static function (ContainerConfigurator $configurator): void {
     $services->set(HttpReportGenerator::class)->tag('app.report_generator');
     $services->set(JsonReportGenerator::class)->tag('app.report_generator');
     $services->set(TextReportGenerator::class)->tag('app.report_generator');
-    $services->set(AnalyzeCommand::class)->arg('$generator', tagged_locator('app.report_generator', defaultIndexMethod: 'format'));
+
+    $services->set(AnalyzeCommand::class)
+        ->arg('$generator', tagged_locator('app.report_generator', defaultIndexMethod: 'format'))
+        ->arg('$projectRoot', getcwd());
 
     $services->set(Application::class)->public()->args(['$commands' => tagged_iterator('app.command')]);
     $services->set(Application\Context::class)->arg('$debug', '%app.debug%');

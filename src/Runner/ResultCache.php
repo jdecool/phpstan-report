@@ -12,7 +12,7 @@ use function Amp\Future\await;
 /**
  * @phpstan-type ErrorCollection array<string, Error[]>
  */
-abstract class ResultCache
+abstract class ResultCache implements ResultCacheInterface
 {
     protected array $rawData;
 
@@ -146,6 +146,31 @@ abstract class ResultCache
         ]);
 
         return $data;
+    }
+
+    /**
+     * Process errors using parallel processing for better performance on large codebases
+     *
+     * @param callable $processor
+     * @return array
+     */
+    protected function processErrorsInParallel(callable $processor): array
+    {
+        $allErrors = array_merge(
+            $this->errors->getRawErrors(),
+            $this->locallyIgnoredErrors->getRawErrors(),
+        );
+
+        $results = [];
+
+        foreach ($allErrors as $file => $errors) {
+            $results[$file] = [];
+            foreach ($errors as $error) {
+                $results[$file][] = $processor($error);
+            }
+        }
+
+        return $results;
     }
 
     protected function filterErrors(callable $fn): ErrorContainer
