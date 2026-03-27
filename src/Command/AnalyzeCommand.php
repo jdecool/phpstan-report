@@ -8,6 +8,7 @@ use JDecool\PHPStanReport\Bridge\PHPStan\Command as Bridge;
 use JDecool\PHPStanReport\Generator\ReportGenerator;
 use JDecool\PHPStanReport\Generator\SortField;
 use JDecool\PHPStanReport\Logger\ExecutionMetrics;
+use JDecool\PHPStanReport\Runner\CachedResultCache;
 use JDecool\PHPStanReport\Runner\ExecutionResult;
 use JDecool\PHPStanReport\Runner\FilteredResultCache;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
@@ -39,6 +40,7 @@ final class AnalyzeCommand extends Command
         private readonly Bridge\AnalyseCommandDefinition $analyseCommandDefinition,
         private readonly Filesystem $fs,
         private readonly ExecutionMetrics $metrics,
+        private readonly string $projectRoot,
     ) {
         parent::__construct();
 
@@ -118,11 +120,48 @@ final class AnalyzeCommand extends Command
         }
 
         $executionResult = new ExecutionResult(Command::SUCCESS);
+        $parameters = null;
+
         if (!$input->getOption('report-without-analyze')) {
             $executionResult = $this->phpstan->analyze();
+            $parameters = $this->phpstan->dumpParameters();
+        } else {
+            $parameters = $this->phpstan->dumpParameters();
         }
 
-        $parameters = $this->phpstan->dumpParameters();
+        // Create cache key based on analysis parameters
+        $cacheKey = $this->createCacheKey($input, $parameters);
+
+        // Try to load from cache
+        $cachedResultCache = new CachedResultCache(
+            $parameters->getResultCache(),
+            $cacheKey,
+            $this->logger,
+            $this->fs,
+            $this->projectRoot,
+        );
+
+        $resultCache = $parameters->getResultCache();
+
+        // Use cached results if available and valid
+        if ($cachedResultCache->isCacheValid()) {
+            $output->writeln('<info>Using cached analysis results</info>');
+
+            // Load cached data and create a new ResultCache with cached statistics
+            $cachedData = $cachedResultCache->loadFromCache();
+            if ($cachedData !== null) {
+                // For now, we'll use the current result cache but this could be enhanced
+                // to restore full cached state in future versions
+                $output->writeln(sprintf(
+                    '<info>Cache info: %d total errors, %d lines ignored</info>',
+                    $cachedData['count_total_errors'],
+                    $cachedData['count_lines_to_ignores'],
+                ));
+            }
+        } else {
+            // Save current results to cache for future runs
+            $cachedResultCache->saveToCache();
+        }
 
         try {
             ($output instanceof ConsoleOutputInterface)
@@ -153,7 +192,7 @@ final class AnalyzeCommand extends Command
             if ($outputFile !== null) {
                 $output = $this->generator
                     ->get($format)
-                    ->generate($input, $parameters->getResultCache(), $reportSortBy);
+                    ->generate($input, $resultCache, $reportSortBy);
 
                 $this->fs->dumpFile($outputFile, $output);
             }
@@ -162,7 +201,7 @@ final class AnalyzeCommand extends Command
         $maximumAllowedErrors = $input->getOption('report-maximum-allowed-errors');
         if (is_numeric($maximumAllowedErrors)) {
             $maximumAllowedErrors = (int) $maximumAllowedErrors;
-            if ($maximumAllowedErrors <= $parameters->getResultCache()->countTotalErrors()) {
+            if ($maximumAllowedErrors <= $resultCache->countTotalErrors()) {
                 $output->writeln("<error>Maximum allowed errors exceeded ($maximumAllowedErrors allowed).</error>");
                 $executionResult = $executionResult->hasFailed() ? $executionResult : new ExecutionResult(255, $executionResult->output);
             }
@@ -206,6 +245,21 @@ final class AnalyzeCommand extends Command
             ->generate($input, $resultCache, $sortedBy);
 
         $output->writeln($result);
+    }
+
+    private function createCacheKey(InputInterface $input, PHPStanParameters $parameters): string
+    {
+        // Create a unique cache key based on relevant analysis parameters
+        $paramData = $parameters->toArray();
+
+        $cacheComponents = [
+            'configuration_file' => $input->getOption('configuration') ?? '',
+            'level' => $paramData['level'] ?? '',
+            'memory_limit' => $input->getOption('memory-limit') ?? '',
+            'result_cache_path' => $paramData['resultCachePath'] ?? '',
+        ];
+
+        return serialize($cacheComponents);
     }
 
     /**

@@ -96,16 +96,24 @@ final class PHPStanRunner
 
         $output = '';
 
-        do {
-            usleep(300_000);
+        // Use more efficient reading with smaller sleep intervals
+        while (true) {
+            usleep(50_000); // Reduced from 300ms to 50ms for better responsiveness
 
-            $output .= stream_get_contents($pipes[1]);
+            $chunk = stream_get_contents($pipes[1]);
+            if ($chunk !== false && $chunk !== '') {
+                $output .= $chunk;
+            }
+
             $procStatus = proc_get_status($proc);
-        } while ($procStatus['running']);
+            if (!$procStatus['running']) {
+                break;
+            }
+        }
 
-        $exitCode = proc_close($proc);
+        fclose($pipes[1]);
 
-        $processExitCode = (int) ($procStatus['exitcode'] ?? $exitCode);
+        $processExitCode = proc_close($proc);
         $this->logger->debug("--> Exit code: {$processExitCode}");
 
         return new ExecutionResult($processExitCode, $output);
