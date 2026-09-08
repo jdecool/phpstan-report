@@ -21,13 +21,7 @@ final class PHPStanResultCache extends ResultCache
 
     public static function fromFile(string $file): self
     {
-        if (!file_exists($file)) {
-            throw new \RuntimeException("File {$file} does not exist.");
-        }
-
-        $data = require $file;
-
-        return new static($data);
+        return new static(ResultCacheReader::read($file));
     }
 
     /**
