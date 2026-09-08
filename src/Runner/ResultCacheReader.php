@@ -6,27 +6,10 @@ namespace JDecool\PHPStanReport\Runner;
 
 use RuntimeException;
 
-/**
- * Reads a PHPStan `resultCache.php` file, whichever of its two on-disk formats it uses.
- *
- * Up to phpstan/phpstan 2.2.12 the file was a PHP file returning an array, so `require` was enough.
- * Since 2.2.13 it starts with `<?php return; ?>` followed by length-prefixed serialized frames
- * (see PHPStan\Analyser\ResultCache\ResultCacheManager), so `require` returns null. The reader on
- * PHPStan's side is private, hence this parser.
- */
 final class ResultCacheReader
 {
     private const SERIALIZED_FILE_PREFIX = '<?php return; ?>';
-
-    /**
-     * Array sections this project reads. Every other section - `exportedNodes` alone can be tens of
-     * megabytes - is walked past instead of unserialized.
-     */
     private const KEPT_SECTIONS = ['errors', 'locallyIgnoredErrors', 'linesToIgnore'];
-
-    /**
-     * Sections the old format exposed as closures, and that consumers still expect as closures.
-     */
     private const CALLBACK_SECTIONS = ['errors', 'locallyIgnoredErrors'];
 
     /**
@@ -82,7 +65,6 @@ final class ResultCacheReader
 
             [$name, $size] = $parts;
 
-            // `name length\n` is a single value, `name* count\n` an array of length-prefixed entries.
             if (!str_ends_with($name, '*')) {
                 $data[$name] = self::readFrame($handle, (int) $size, $file);
 

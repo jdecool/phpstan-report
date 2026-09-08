@@ -13,6 +13,7 @@ array:2 [
       -identifier: "missingType.property"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
   ]
   "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php" => array:3 [
@@ -29,6 +30,7 @@ array:2 [
       -identifier: "variable.undefined"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
     1 => PHPStan\Analyser\Error {
       -message: "Binary operation "." between 'Hello, ' and mixed results in an error."
@@ -43,6 +45,7 @@ array:2 [
       -identifier: "binaryOp.invalid"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
     2 => PHPStan\Analyser\Error {
       -message: "Call to method format() on an unknown class JDecool\TestPhpstan\DateTimeImutable."
@@ -57,6 +60,7 @@ array:2 [
       -identifier: "class.notFound"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
   ]
 ]

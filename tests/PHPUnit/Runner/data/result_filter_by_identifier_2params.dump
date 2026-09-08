@@ -12,6 +12,7 @@ array:3 [
     -identifier: "class.notFound"
     -metadata: []
     -fixedErrorDiff: null
+    -traitContexts: []
   }
   1 => PHPStan\Analyser\Error {
     -message: "Binary operation "." between 'Hello, ' and mixed results in an error."
@@ -26,6 +27,7 @@ array:3 [
     -identifier: "binaryOp.invalid"
     -metadata: []
     -fixedErrorDiff: null
+    -traitContexts: []
   }
   2 => PHPStan\Analyser\Error {
     -message: "Call to method format() on an unknown class JDecool\TestPhpstan\DateTimeImutable."
@@ -40,5 +42,6 @@ array:3 [
     -identifier: "class.notFound"
     -metadata: []
     -fixedErrorDiff: null
+    -traitContexts: []
   }
 ]

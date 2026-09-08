@@ -13,6 +13,7 @@ array:2 [
       -identifier: "missingType.property"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
   ]
   "/home/jdecool/Workspace/sandbox/test-phpstan/src/HelloWorld.php" => array:1 [
@@ -29,6 +30,7 @@ array:2 [
       -identifier: "variable.undefined"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
   ]
 ]
