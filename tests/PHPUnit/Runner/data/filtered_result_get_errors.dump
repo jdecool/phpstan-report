@@ -13,6 +13,7 @@ array:1 [
       -identifier: "argument.type"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
   ]
 ]

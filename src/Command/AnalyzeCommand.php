@@ -13,6 +13,7 @@ use JDecool\PHPStanReport\Runner\FilteredResultCache;
 use JDecool\PHPStanReport\Runner\PHPStanParameters;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,6 +23,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Filesystem\Filesystem;
 use Throwable;
 
+#[AsCommand(name: 'analyze')]
 final class AnalyzeCommand extends Command
 {
     /**
@@ -49,11 +51,6 @@ final class AnalyzeCommand extends Command
 
             $this->phpstan->registerOptionToIgnore($option->getName());
         }
-    }
-
-    public static function getDefaultName(): string
-    {
-        return 'analyze';
     }
 
     /**

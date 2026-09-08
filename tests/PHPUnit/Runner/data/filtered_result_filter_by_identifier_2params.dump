@@ -12,6 +12,7 @@ array:2 [
     -identifier: "missingType.property"
     -metadata: []
     -fixedErrorDiff: null
+    -traitContexts: []
   }
   1 => PHPStan\Analyser\Error {
     -message: "Undefined variable: $foo"
@@ -26,5 +27,6 @@ array:2 [
     -identifier: "variable.undefined"
     -metadata: []
     -fixedErrorDiff: null
+    -traitContexts: []
   }
 ]

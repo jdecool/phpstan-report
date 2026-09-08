@@ -19,8 +19,13 @@ final class Application extends BaseApplication
     {
         parent::__construct(self::NAME, self::VERSION);
 
+        // Symfony Console 7.4 replaced Application::add() with addCommand() and 8.0 removed the former.
+        /** @phpstan-ignore function.alreadyNarrowedType */
+        $addCommand = method_exists($this, 'addCommand') ? 'addCommand' : 'add';
+
         foreach ($commands as $command) {
-            $this->add($command);
+            /** @phpstan-ignore method.notFound */
+            $this->$addCommand($command);
         }
 
         $this->setDefaultCommand('analyze');

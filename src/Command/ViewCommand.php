@@ -6,6 +6,7 @@ namespace JDecool\PHPStanReport\Command;
 
 use Symfony\Component\Console\Input\InputOption;
 use JDecool\PHPStanReport\Runner\PHPStanRunner;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -15,17 +16,13 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
 
+#[AsCommand(name: 'view')]
 final class ViewCommand extends Command
 {
     public function __construct(
         private readonly PHPStanRunner $phpstan,
     ) {
         parent::__construct();
-    }
-
-    public static function getDefaultName(): string
-    {
-        return 'view';
     }
 
     protected function configure(): void

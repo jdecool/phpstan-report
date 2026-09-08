@@ -13,6 +13,7 @@ array:1 [
       -identifier: "class.notFound"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
     1 => PHPStan\Analyser\Error {
       -message: "Parameter #1 $e of method JDecool\TestPhpstan\Collection<int>::add() expects int, string given."
@@ -27,6 +28,7 @@ array:1 [
       -identifier: "argument.type"
       -metadata: []
       -fixedErrorDiff: null
+      -traitContexts: []
     }
   ]
 ]

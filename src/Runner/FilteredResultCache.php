@@ -21,13 +21,7 @@ final class FilteredResultCache extends ResultCache
 
     public static function fromFile(string $file, array $excludedErrorIdentifiers): self
     {
-        if (!file_exists($file)) {
-            throw new \RuntimeException("File {$file} does not exist.");
-        }
-
-        $data = require $file;
-
-        return new static($data, $excludedErrorIdentifiers);
+        return new static(ResultCacheReader::read($file), $excludedErrorIdentifiers);
     }
 
     public static function fromResultatCache(ResultCache $resultCache, array $excludedErrorIdentifiers): self
