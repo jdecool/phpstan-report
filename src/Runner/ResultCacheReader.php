@@ -100,7 +100,8 @@ final class ResultCacheReader
     }
 
     /**
-     * Each entry is a `serialize([$key => $value])` blob, so the key travels with its value.
+     * Since phpstan/phpstan 2.3.5, an entry header holds "<keyLength> <valueLength>" and is followed by the
+     * key and the value serialized separately. Before, it held one length for a `serialize([$key => $value])` blob.
      *
      * @param resource $handle
      * @return array<mixed>
@@ -110,7 +111,20 @@ final class ResultCacheReader
         $entries = [];
 
         for ($i = 0; $i < $count; $i++) {
-            $entry = self::readFrame($handle, self::readEntryLength($handle, $file), $file);
+            [$length, $valueLength] = self::readEntryHeader($handle, $file);
+
+            if ($valueLength !== null) {
+                $key = self::readFrame($handle, $length, $file);
+                if (!is_int($key) && !is_string($key)) {
+                    throw new RuntimeException("An entry key of PHPStan result cache file '{$file}' is neither an int nor a string.");
+                }
+
+                $entries[$key] = self::readFrame($handle, $valueLength, $file);
+
+                continue;
+            }
+
+            $entry = self::readFrame($handle, $length, $file);
             if (!is_array($entry)) {
                 throw new RuntimeException("An entry frame of PHPStan result cache file '{$file}' does not contain an array.");
             }
@@ -129,10 +143,10 @@ final class ResultCacheReader
     private static function skipEntryFrames($handle, int $count, string $file): void
     {
         for ($i = 0; $i < $count; $i++) {
-            $length = self::readEntryLength($handle, $file);
+            [$length, $valueLength] = self::readEntryHeader($handle, $file);
 
             // fseek() past the end of a file succeeds, so the position is what catches a truncated section.
-            if (fseek($handle, $length, SEEK_CUR) !== 0 || ftell($handle) === false) {
+            if (fseek($handle, $length + ($valueLength ?? 0), SEEK_CUR) !== 0 || ftell($handle) === false) {
                 throw new RuntimeException("PHPStan result cache file '{$file}' is truncated.");
             }
         }
@@ -140,15 +154,18 @@ final class ResultCacheReader
 
     /**
      * @param resource $handle
+     * @return array{int, ?int} the value length is null for the single-blob entries written before phpstan/phpstan 2.3.5
      */
-    private static function readEntryLength($handle, string $file): int
+    private static function readEntryHeader($handle, string $file): array
     {
-        $length = fgets($handle);
-        if ($length === false) {
+        $header = fgets($handle);
+        if ($header === false) {
             throw new RuntimeException("PHPStan result cache file '{$file}' ended before its last entry.");
         }
 
-        return (int) rtrim($length, "\n");
+        $lengths = explode(' ', rtrim($header, "\n"));
+
+        return [(int) $lengths[0], isset($lengths[1]) ? (int) $lengths[1] : null];
     }
 
     /**
@@ -166,7 +183,7 @@ final class ResultCacheReader
         }
 
         $value = @unserialize($blob);
-        if ($value === false) {
+        if ($value === false && $blob !== serialize(false)) {
             throw new RuntimeException("A frame of PHPStan result cache file '{$file}' could not be unserialized.");
         }
 
